@@ -7,18 +7,20 @@ import PasswordInput from '../../components/PasswordInput';
 import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
+import DatagridPasswordInput from './../../components/DatagridPasswordInput';
+
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
     field: 'name',
     headerName: 'Ad',
-    width: 100,
+    width: 150,
     editable: true,
   },
   {
     field: 'surname',
     headerName: 'Soyad',
-    width: 100,
+    width: 150,
     editable: true,
   },
   {
@@ -31,15 +33,20 @@ const columns = [
   {
     field: 'username',
     headerName: 'Kullanıcı Adı',
-    width: 110,
+    width: 180,
     editable: true,
   },
   {
     field: 'password',
     headerName: 'Şifre',
+    renderCell: (params) => (
+      <div>
+        <DatagridPasswordInput val={params.value} />
+      </div>
+    ),
     //description: 'This column has a value getter and is not sortable.',
-    //sortable: false,
-    width: 160,
+    sortable: false,
+    width: 180,
     // valueGetter: (params) =>
     //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
@@ -103,7 +110,7 @@ const AdminDashboard = () => {
       });
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     getAdmins();
   }, []);
 
@@ -121,30 +128,16 @@ const AdminDashboard = () => {
             selectionModel={selectedAdmins}
             setSelectionModel={setSelectedAdmins}
           />
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Button
-                onClick={() => {
-                  removeAdmin();
-                }}
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Seçili Olanları Sil
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Seçili Olanı Güncelle
-              </Button>
-            </Grid>
-          </Grid>
+          <Button
+            onClick={() => {
+              removeAdmin();
+            }}
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Seçili Olanları Sil
+          </Button>
         </Grid>
         <Grid item xs={0} sm={0} md={4}>
           <Box
