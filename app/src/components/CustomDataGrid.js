@@ -7,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
+import { socket } from '../services/socketServices';
 
 const useFakeMutation = () => {
   return React.useCallback(
@@ -25,7 +26,6 @@ const useFakeMutation = () => {
 };
 
 function computeMutation(newRow, oldRow) {
-  console.log(newRow.name, oldRow.name);
   if (newRow.name !== oldRow.name) {
     return `'${oldRow.name}' olan Adı '${newRow.name}' olarak değiştirilecektir.`;
   }
@@ -33,7 +33,7 @@ function computeMutation(newRow, oldRow) {
     return `'${oldRow.surname}' olan Soyadı '${newRow.surname}' olarak değiştirilecektir.`;
   }
   if (newRow.tcnumber !== oldRow.tcnumber) {
-    return `'${oldRow.tcnumber}' olan TC '${newRow.tcnumber}' olarak değiştirilecektir.`;
+    return `'${oldRow.tcnumber}' olan T.C. Kimlik No '${newRow.tcnumber}' olarak değiştirilecektir.`;
   }
   if (newRow.username !== oldRow.username) {
     return `'${oldRow.username}' olan Kullanıcı Adı '${newRow.username}' olarak değiştirilecektir.`;
@@ -67,6 +67,7 @@ export default function AskConfirmationBeforeSave({
   columns,
   selectionModel,
   setSelectionModel,
+  socketUpdateMethodName,
 }) {
   const mutateRow = useFakeMutation();
   const noButtonRef = React.useRef(null);
@@ -79,8 +80,6 @@ export default function AskConfirmationBeforeSave({
   const processRowUpdate = React.useCallback(
     (newRow, oldRow) =>
       new Promise((resolve, reject) => {
-        console.log(newRow, oldRow);
-
         const mutation = computeMutation(newRow, oldRow);
         if (mutation) {
           // Save the arguments to resolve or reject the promise later
@@ -102,11 +101,23 @@ export default function AskConfirmationBeforeSave({
     const { newRow, oldRow, reject, resolve } = promiseArguments;
 
     try {
+      socket
+        .sendRequest(socketUpdateMethodName, newRow)
+        .then(async (data) => {
+          if (data) {
+            const response = await mutateRow(newRow);
+            setSnackbar({
+              children: 'Başarıyla kaydedildi',
+              severity: 'success',
+            });
+            resolve(response);
+            setPromiseArguments(null);
+          }
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
       // Make the HTTP request to save in the backend
-      const response = await mutateRow(newRow);
-      setSnackbar({ children: 'Başarıyla kaydedildi', severity: 'success' });
-      resolve(response);
-      setPromiseArguments(null);
     } catch (error) {
       setSnackbar({ children: 'Boş olamaz', severity: 'error' });
       reject(oldRow);

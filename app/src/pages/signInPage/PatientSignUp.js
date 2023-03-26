@@ -5,49 +5,58 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControl from '@mui/material/FormControl';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link } from 'react-router-dom';
 import { socket } from '../../services/socketServices';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Stack } from '@mui/material';
 import Input from '../../components/Input';
+import PasswordInput from '../../components/PasswordInput';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useNavigate } from 'react-router-dom';
 const PatientSignUp = () => {
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [name, setName] = React.useState();
+  const [surname, setSurname] = React.useState();
+  const [tcnumber, setTcNumber] = React.useState();
+  const [birthplace, setBirthplace] = React.useState();
   const [birthdate, setBirthdate] = React.useState();
-  const handleSubmit = (event) => {
+  const [phoneNumber, setPhoneNumber] = React.useState();
+  const [email, setEmail] = React.useState();
+  const [username, setUsername] = React.useState();
+  const [password, setPassword] = React.useState();
+  const [repassword, setRepassword] = React.useState();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({});
-    let userInfo = {
-      username: data.get('userName'),
-      password: data.get('password'),
-    };
-    socket
-      .sendRequest('login', userInfo)
-      .then(async (data) => {
-        await login(data.userToken);
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
+    try {
+      let newPatientInfo = {
+        name: name,
+        surname: surname,
+        tcnumber: tcnumber,
+        birthplace: birthplace,
+        birthdate: birthdate,
+        phoneNumber: phoneNumber,
+        email: email,
+        username: username,
+        password: password,
+      };
+      await socket
+        .sendRequest('PATIENT_SIGNUP', newPatientInfo)
+        .then(async (data) => {
+          await login({ role: 'patient' });
+          navigate('/', { replace: true });
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
   return (
     <Box
       sx={{
@@ -67,13 +76,50 @@ const PatientSignUp = () => {
       </Typography>
       <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
         <Stack direction="row" spacing={2}>
-          <Input id="name" label="Ad" isRequired={true} margin={true} />
-          <Input id="surname" label="Soyad" isRequired={true} />
+          <Input
+            id="name"
+            label="Ad"
+            isRequired={true}
+            margin={true}
+            value={name}
+            setValue={setName}
+          />
+          <Input
+            id="surname"
+            label="Soyad"
+            isRequired={true}
+            value={surname}
+            setValue={setSurname}
+          />
         </Stack>
-        <Input id="tc" label="T.C Kimlik Numarası" isRequired={true} />
-        <Input id="email" label="E-mail" isRequired={true} />
-        <Input id="username" label="Kullanıcı Adı" isRequired={true} />
-        <Input id="phoneNumber" label="Cep Telefonu" isRequired={true} />
+        <Input
+          id="tc"
+          label="T.C Kimlik Numarası"
+          isRequired={true}
+          value={tcnumber}
+          setValue={setTcNumber}
+        />
+        <Input
+          id="email"
+          label="E-mail"
+          isRequired={true}
+          value={email}
+          setValue={setEmail}
+        />
+        <Input
+          id="username"
+          label="Kullanıcı Adı"
+          isRequired={true}
+          value={username}
+          setValue={setUsername}
+        />
+        <Input
+          id="phoneNumber"
+          label="Cep Telefonu"
+          isRequired={true}
+          value={phoneNumber}
+          setValue={setPhoneNumber}
+        />
         <Stack direction="row" spacing={2} mt={1}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
@@ -84,73 +130,25 @@ const PatientSignUp = () => {
               sx={{ width: '100%' }}
             />
           </LocalizationProvider>
-          <Input id="birthplace" label="Doğum Yeri" isRequired={true} />
+          <Input
+            id="birthplace"
+            label="Doğum Yeri"
+            isRequired={true}
+            value={birthplace}
+            setValue={setBirthplace}
+          />
         </Stack>
 
-        <FormControl
-          margin="normal"
-          required
-          fullWidth
-          variant="outlined"
-          id="password"
-          name="password"
-        >
-          <InputLabel htmlFor="outlined-adornment-password">Şifre</InputLabel>
-          <OutlinedInput
-            id="password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="password"
-          />
-        </FormControl>
+        <PasswordInput label="Şifre" value={password} setValue={setPassword} />
 
-        <FormControl
-          margin="normal"
-          required
-          fullWidth
-          variant="outlined"
-          id="password"
-          name="password"
-        >
-          <InputLabel htmlFor="outlined-adornment-password">
-            Şifre Tekrar
-          </InputLabel>
-          <OutlinedInput
-            id="password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="password"
-          />
-        </FormControl>
+        <PasswordInput
+          label="Şifre Tekrar"
+          value={repassword}
+          setValue={setRepassword}
+        />
 
         <Button
-          component={Link}
           type="submit"
-          to="../../admin"
           fullWidth
           variant="contained"
           sx={{

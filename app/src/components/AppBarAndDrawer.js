@@ -120,7 +120,18 @@ const AppBarAndDrawer = ({ title, listItems }) => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component={Link}
+              to=""
+              sx={{
+                mr: 2,
+                fontWeight: 600,
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
               {title}
             </Typography>
           </Stack>

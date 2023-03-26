@@ -25,7 +25,7 @@ const columns = [
   },
   {
     field: 'tcnumber',
-    headerName: 'TC',
+    headerName: 'T.C. Kimlik No',
     type: 'number',
     width: 150,
     editable: true,
@@ -58,7 +58,16 @@ const AdminDashboard = () => {
   const [tcnumber, setTcNumber] = React.useState();
   const [username, setUsername] = React.useState();
   const [password, setPassword] = React.useState();
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = React.useState([
+    {
+      id: 1,
+      name: 'emre yasin',
+      surname: 'şallı',
+      tcnumber: '11111111',
+      username: 'emresalli',
+      password: '1234455',
+    },
+  ]);
   const [selectedAdmins, setSelectedAdmins] = React.useState([]);
 
   const getAdmins = () => {
@@ -116,17 +125,17 @@ const AdminDashboard = () => {
 
   return (
     <Box sx={{ height: 400, width: '100%' }}>
-      <Typography variant="h3" component="div" sx={{ flexGrow: 1, marginY: 4 }}>
-        Yöneticiler
-      </Typography>
-
-      <Grid container spacing={4} mt={3} sx={{ height: 400, width: '100%' }}>
+      <Grid container spacing={4} mt={2} sx={{ height: 400, width: '100%' }}>
         <Grid item xs={12} sm={12} md={8}>
+          <Typography variant="h3" component="div" mb={2}>
+            Yöneticiler
+          </Typography>
           <CustomDataGrid
             rows={rows}
             columns={columns}
             selectionModel={selectedAdmins}
             setSelectionModel={setSelectedAdmins}
+            socketUpdateMethodName="UPDATE_ADMIN"
           />
           <Button
             onClick={() => {
@@ -149,7 +158,9 @@ const AdminDashboard = () => {
             <Typography
               variant="h5"
               component="div"
-              sx={{ flexGrow: 1, marginBottom: 1 }}
+              mt={3}
+              mb={1}
+              sx={{ flexGrow: 1 }}
             >
               Yönetici Ekle
             </Typography>
@@ -169,7 +180,7 @@ const AdminDashboard = () => {
             />
             <Input
               id="tcnumber"
-              label="TC"
+              label="T.C. Kimlik No"
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}

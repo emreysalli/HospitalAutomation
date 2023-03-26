@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { socket } from './services/socketServices';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SignIn from './pages/signInPage/SignIn';
 import ResponsiveAppBar from './components/ResponsiveAppBar';
@@ -14,9 +16,26 @@ import Inbox from './pages/adminPage/Inbox';
 import { AuthContext } from './contexts/AuthContext';
 import LoginScreen from './pages/LoginScreen';
 import AdminSignIn from './pages/signInPage/AdminSignIn';
+import DoctorSignIn from './pages/signInPage/DoctorSignIn';
 import PatientSignIn from './pages/signInPage/PatientSignIn';
 import PatientSignUp from './pages/signInPage/PatientSignUp';
 import NoMatch from './pages/NoMatch';
+import DoctorHomePage from './pages/doctorPage/DoctorHomePage';
+import WelcomePage from './components/WelcomePage';
+import PatientHomePage from './pages/patientPage/PatientHomePage';
+import AccountInfoDashboard from './pages/patientPage/AccountInfoDashboard';
+import MakeAppointmentDashboard from './pages/patientPage/MakeAppointmentDashboard';
+import AppointmentsDashboard from './pages/patientPage/AppointmentsDashboard';
+import PastAppointmentsDashboard from './pages/patientPage/PastAppointmentsDashboard';
+import AnalysisResultsDashboard from './pages/patientPage/AnalysisResultsDashboard';
+import PrescriptionsDashboard from './pages/patientPage/PrescriptionsDashboard';
+const theme = createTheme({
+  palette: {
+    background: {
+      default: '#F5F5F5',
+    },
+  },
+});
 const App = () => {
   const [user, setUser] = React.useState(null);
   const authContext = useMemo(
@@ -50,55 +69,90 @@ const App = () => {
     socket.connectSocket();
   }, []);
   return (
-    <AuthContext.Provider value={authContext}>
-      <BrowserRouter>
-        <ResponsiveAppBar />
-        <Routes>
-          {user === null ? (
-            <>
-              <Route path="/" element={<LoginScreen />} />
-              <Route path="/signin" element={<SignIn />}>
-                <Route path="admin" element={<AdminSignIn />} />
-                <Route path="patient" element={<PatientSignIn />} />
-                <Route path="patientsignup" element={<PatientSignUp />} />
-              </Route>
-            </>
-          ) : (
-            <>
-              {user.role === 'admin' ? (
-                <Route path="/" element={<AdminHomePage />}>
-                  <Route path="admins" element={<AdminDashboard />} />
-                  <Route path="doctors" element={<DoctorDashboard />} />
-                  <Route path="polyclinics" element={<PolyclinicDashboard />} />
-                  <Route
-                    path="labtechnicians"
-                    element={<LabTechnicianDashboard />}
-                  />
-                  <Route path="staff" element={<StaffDashboard />} />
-                  <Route path="patients" element={<PatientDashboard />} />
-                  <Route path="inbox" element={<Inbox />} />
+    <ThemeProvider theme={theme}>
+      <AuthContext.Provider value={authContext}>
+        <CssBaseline />
+        <BrowserRouter>
+          <ResponsiveAppBar />
+          <Routes>
+            {user === null ? (
+              <>
+                <Route path="/" element={<LoginScreen />} />
+                <Route path="/signin" element={<SignIn />}>
+                  <Route path="admin" element={<AdminSignIn />} />
+                  <Route path="patient" element={<PatientSignIn />} />
+                  <Route path="doctor" element={<DoctorSignIn />} />
+                  <Route path="patientsignup" element={<PatientSignUp />} />
                 </Route>
-              ) : user.role === 'doctor' ? (
-                /* doktor paneli */
-                <Route path="/doctor"></Route>
-              ) : user.role === 'staff' ? (
-                /* hasta kabul personel paneli */
-                <Route path="/staff"></Route>
-              ) : user.role === 'labtechnician' ? (
-                /* laborant paneli */
-                <Route path="/labtechnician"></Route>
-              ) : user.role === 'labtechnician' ? (
-                /* hasta paneli */
-                <Route path="/patient"></Route>
-              ) : (
-                <Route path="*" element={<NoMatch />} />
-              )}
-            </>
-          )}
-          <Route path="*" element={<NoMatch />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthContext.Provider>
+              </>
+            ) : (
+              <>
+                {user.role === 'admin' ? (
+                  <Route path="/" element={<AdminHomePage />}>
+                    <Route path="" element={<WelcomePage />} />
+                    <Route path="admins" element={<AdminDashboard />} />
+                    <Route path="doctors" element={<DoctorDashboard />} />
+                    <Route
+                      path="polyclinics"
+                      element={<PolyclinicDashboard />}
+                    />
+                    <Route
+                      path="labtechnicians"
+                      element={<LabTechnicianDashboard />}
+                    />
+                    <Route path="staff" element={<StaffDashboard />} />
+                    <Route path="patients" element={<PatientDashboard />} />
+                    <Route path="inbox" element={<Inbox />} />
+                  </Route>
+                ) : user.role === 'doctor' ? (
+                  /* doktor paneli */
+                  <Route path="/" element={<DoctorHomePage />}></Route>
+                ) : user.role === 'staff' ? (
+                  /* hasta kabul personel paneli */
+                  <Route path="/staff"></Route>
+                ) : user.role === 'labtechnician' ? (
+                  /* laborant paneli */
+                  <Route path="/labtechnician"></Route>
+                ) : user.role === 'patient' ? (
+                  /* hasta paneli */
+                  <Route path="/" element={<PatientHomePage />}>
+                    <Route path="" element={<WelcomePage />} />
+                    <Route
+                      path="account-info"
+                      element={<AccountInfoDashboard />}
+                    />
+                    <Route
+                      path="make-appointment"
+                      element={<MakeAppointmentDashboard />}
+                    />
+                    <Route
+                      path="appointments"
+                      element={<AppointmentsDashboard />}
+                    />
+                    <Route
+                      path="past-appointments"
+                      element={<PastAppointmentsDashboard />}
+                    />
+                    <Route
+                      path="analysis-results"
+                      element={<AnalysisResultsDashboard />}
+                    />
+                    <Route
+                      path="prescriptions"
+                      element={<PrescriptionsDashboard />}
+                    />
+                    <Route path="inbox" element={<Inbox />} />
+                  </Route>
+                ) : (
+                  <Route path="*" element={<NoMatch />} />
+                )}
+              </>
+            )}
+            <Route path="*" element={<NoMatch />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthContext.Provider>
+    </ThemeProvider>
   );
 };
 

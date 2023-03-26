@@ -25,7 +25,7 @@ const columns = [
   },
   {
     field: 'tcnumber',
-    headerName: 'TC',
+    headerName: 'T.C. Kimlik No',
     type: 'number',
     width: 150,
     editable: true,
@@ -116,17 +116,17 @@ const StaffDashboard = () => {
 
   return (
     <Box sx={{ height: 400, width: '100%' }}>
-      <Typography variant="h3" component="div" sx={{ flexGrow: 1, marginY: 4 }}>
-        Hasta Kabul Personeller
-      </Typography>
-
-      <Grid container spacing={4} mt={3} sx={{ height: 400, width: '100%' }}>
+      <Grid container spacing={4} mt={2} sx={{ height: 400, width: '100%' }}>
         <Grid item xs={12} sm={12} md={8}>
+          <Typography variant="h3" component="div" mb={2}>
+            Hasta Kabul Personeller
+          </Typography>
           <CustomDataGrid
             rows={rows}
             columns={columns}
             selectionModel={selectedStaff}
             setSelectionModel={setSelectedStaff}
+            socketUpdateMethodName="UPDATE_STAFF"
           />
           <Button
             onClick={() => {
@@ -149,7 +149,9 @@ const StaffDashboard = () => {
             <Typography
               variant="h5"
               component="div"
-              sx={{ flexGrow: 1, marginBottom: 1 }}
+              mt={3}
+              mb={1}
+              sx={{ flexGrow: 1 }}
             >
               Hasta Kabul Personel Ekle
             </Typography>
@@ -169,7 +171,7 @@ const StaffDashboard = () => {
             />
             <Input
               id="tcnumber"
-              label="TC"
+              label="T.C. Kimlik No"
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}

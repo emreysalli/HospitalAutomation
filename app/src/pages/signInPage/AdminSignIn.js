@@ -24,8 +24,7 @@ const AdminSignIn = () => {
       username: username,
       password: password,
     };
-    await login({ role: 'admin' });
-    navigate('/', { replace: true });
+
     socket
       .sendRequest('ADMIN_LOGIN', userInfo)
       .then(async (data) => {

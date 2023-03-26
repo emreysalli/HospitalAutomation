@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { socket } from '../../services/socketServices';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-const PatientSignIn = () => {
+const DoctorSignIn = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [username, setUsername] = React.useState();
@@ -26,10 +26,10 @@ const PatientSignIn = () => {
     };
 
     socket
-      .sendRequest('PATIENT_LOGIN', userInfo)
+      .sendRequest('DOCTOR_LOGIN', userInfo)
       .then(async (data) => {
         if (data?.userPresent) {
-          await login({ role: 'patient' });
+          await login({ role: 'doctor' });
           navigate('/', { replace: true });
         } else {
           alert('Kullanıcı adı veya parola hatalı.');
@@ -39,6 +39,7 @@ const PatientSignIn = () => {
         console.error(err.message);
       });
   };
+
   return (
     <Box
       sx={{
@@ -54,7 +55,7 @@ const PatientSignIn = () => {
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Hasta Giriş
+        Doktor Giriş
       </Typography>
       <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
         <Input
@@ -86,15 +87,10 @@ const PatientSignIn = () => {
               Şifremi Unuttum
             </Link>
           </Grid>
-          <Grid item>
-            <Link to="../patientsignup" variant="body2">
-              Hesabınız yok mu? Üye Ol
-            </Link>
-          </Grid>
         </Grid>
       </Box>
     </Box>
   );
 };
 
-export default PatientSignIn;
+export default DoctorSignIn;

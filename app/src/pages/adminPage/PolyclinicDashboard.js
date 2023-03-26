@@ -85,17 +85,17 @@ const PolyclinicDashboard = () => {
 
   return (
     <Box sx={{ height: 400, width: '100%' }}>
-      <Typography variant="h3" component="div" sx={{ flexGrow: 1, marginY: 4 }}>
-        Poliklinikler
-      </Typography>
-
-      <Grid container spacing={4} mt={3} sx={{ height: 400, width: '100%' }}>
+      <Grid container spacing={4} mt={2} sx={{ height: 400, width: '100%' }}>
         <Grid item xs={12} sm={12} md={8}>
+          <Typography variant="h3" component="div" mb={2}>
+            Poliklinikler
+          </Typography>
           <CustomDataGrid
             rows={rows}
             columns={columns}
             selectionModel={selectionModel}
             setSelectionModel={setSelectionModel}
+            socketUpdateMethodName="UPDATE_POLYCLINIC"
           />
           <Button
             onClick={() => {
@@ -113,7 +113,9 @@ const PolyclinicDashboard = () => {
             <Typography
               variant="h5"
               component="div"
-              sx={{ flexGrow: 1, marginBottom: 1 }}
+              mt={3}
+              mb={1}
+              sx={{ flexGrow: 1 }}
             >
               Poliklinik Ekle
             </Typography>

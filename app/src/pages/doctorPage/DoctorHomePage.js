@@ -1,27 +1,26 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import AppBarAndDrawer from '../../components/AppBarAndDrawer';
 import { Outlet } from 'react-router-dom';
-export default function AdminHomePage() {
+export default function DoctorHomePage() {
   const listItems = [
     {
-      label: 'Yöneticiler',
+      label: 'Kullanıcı',
       iconClassName: 'fa-solid fa-user',
-      linkTo: 'admins',
+      linkTo: 'admin',
     },
     {
-      label: 'Doktorlar',
+      label: 'Randevularım',
       iconClassName: 'fa-solid fa-user-doctor',
       linkTo: 'doctors',
     },
     {
-      label: 'Poliklinikler',
+      label: 'Bekleyen Hasta',
       iconClassName: 'fa-solid fa-house-chimney-medical',
       linkTo: 'polyclinics',
     },
     {
-      label: 'Laboratuvar Teknisyenleri',
+      label: 'Tahlil Sonuçları',
       iconClassName: 'fa-solid fa-flask-vial',
       linkTo: 'labtechnicians',
     },
@@ -44,8 +43,7 @@ export default function AdminHomePage() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBarAndDrawer title="Yönetici Paneli" listItems={listItems} />
+      <AppBarAndDrawer title="Doktor Paneli" listItems={listItems} />
       <Box
         component="main"
         sx={{
