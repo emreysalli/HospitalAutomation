@@ -26,7 +26,7 @@ export default function PatientHomePage() {
     },
     {
       label: 'Tahlil Sonuçları',
-      iconClassName: 'fa-solid fa-file-medical',
+      iconClassName: 'fa-solid fa-vials',
       linkTo: 'analysis-results',
     },
     {
