@@ -18,16 +18,16 @@ import { useNavigate } from 'react-router-dom';
 const PatientSignUp = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [name, setName] = React.useState();
-  const [surname, setSurname] = React.useState();
-  const [tcnumber, setTcNumber] = React.useState();
-  const [birthplace, setBirthplace] = React.useState();
-  const [birthdate, setBirthdate] = React.useState();
-  const [phoneNumber, setPhoneNumber] = React.useState();
-  const [email, setEmail] = React.useState();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
-  const [repassword, setRepassword] = React.useState();
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
+  const [tcnumber, setTcNumber] = React.useState('');
+  const [birthplace, setBirthplace] = React.useState('');
+  const [birthdate, setBirthdate] = React.useState('');
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [repassword, setRepassword] = React.useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -46,7 +46,7 @@ const PatientSignUp = () => {
       await socket
         .sendRequest('PATIENT_SIGNUP', newPatientInfo)
         .then(async (data) => {
-          await login({ role: 'patient' });
+          await login({ role: 'patient', id: data?.id });
           navigate('/', { replace: true });
         })
         .catch((err) => {

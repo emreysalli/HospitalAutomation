@@ -14,8 +14,8 @@ import { useNavigate } from 'react-router-dom';
 const PatientSignIn = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,7 +30,7 @@ const PatientSignIn = () => {
       .sendRequest('PATIENT_LOGIN', userInfo)
       .then(async (data) => {
         if (data?.userPresent) {
-          await login({ role: 'patient' });
+          await login({ role: 'patient', id: data?.id });
           navigate('/', { replace: true });
         } else {
           alert('Kullanıcı adı veya parola hatalı.');

@@ -44,6 +44,7 @@ const App = () => {
         try {
           localStorage.setItem('user', true);
           localStorage.setItem('role', userInfo.role);
+          localStorage.setItem('id', userInfo.id);
           setUser({ role: userInfo.role });
           console.log(userInfo);
         } catch (err) {
@@ -54,6 +55,7 @@ const App = () => {
         try {
           localStorage.removeItem('user');
           localStorage.removeItem('role');
+          localStorage.removeItem('id');
           setUser(null);
         } catch (err) {
           console.error(err);

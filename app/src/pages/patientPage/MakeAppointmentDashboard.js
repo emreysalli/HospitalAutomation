@@ -8,27 +8,98 @@ import Button from '@mui/material/Button';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { socket } from '../../services/socketServices';
 
 const MakeAppointmentDashboard = () => {
-  const [appointmentDate, setAppointmentDate] = React.useState();
-  const [appointments, setAppointments] = React.useState([
-    { hour: '08:30', isDisabled: true },
-    { hour: '09:00', isDisabled: true },
-    { hour: '09:30', isDisabled: false },
-    { hour: '10:00', isDisabled: true },
-    { hour: '10:30', isDisabled: false },
-    { hour: '11:00', isDisabled: false },
-    { hour: '11:30', isDisabled: true },
-    { hour: '12:00', isDisabled: false },
-    { hour: '12:30', isDisabled: true },
-    { hour: '13:00', isDisabled: false },
-    { hour: '13:30', isDisabled: true },
-    { hour: '14:00', isDisabled: false },
-    { hour: '14:30', isDisabled: true },
-    { hour: '15:00', isDisabled: false },
-    { hour: '15:30', isDisabled: false },
-    { hour: '16:00', isDisabled: true },
-  ]);
+  const [appointmentDate, setAppointmentDate] = React.useState('');
+  const [selectedPolyclinic, setSelectedPolyclinic] = React.useState('');
+  const [selectedDoctor, setSelectedDoctor] = React.useState('');
+  const [polyclinics, setPolyclinics] = React.useState([]);
+  const [doctors, setDoctors] = React.useState([]);
+  const [doctorsSelectIsDisabled, setDoctorsSelectIsDisabled] = React.useState(
+    true
+  );
+  const [polyclinicsAndDoctors, setPolyclinicsAndDoctors] = React.useState([]);
+  const [appointments, setAppointments] = React.useState([]);
+
+  const getPolyclinicsAndDoctors = () => {
+    socket
+      .sendRequestWithoutArgs('GET_POLYCLINICS_AND_DOCTORS')
+      .then(async (data) => {
+        if (data) {
+          setPolyclinicsAndDoctors(data.polyclinicsAndDoctors);
+          var p = [];
+
+          for (var i = 0; i < data.polyclinicsAndDoctors.length; i++) {
+            p.push(data.polyclinicsAndDoctors[i].polyclinic);
+          }
+          setPolyclinics(p);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  React.useEffect(() => {
+    getPolyclinicsAndDoctors();
+  }, []);
+
+  React.useEffect(() => {
+    const setDoctorsSelect = () => {
+      if (selectedPolyclinic !== '') {
+        var d = [];
+
+        for (var i = 0; i < polyclinicsAndDoctors.length; i++) {
+          if (polyclinicsAndDoctors[i].polyclinic === selectedPolyclinic) {
+            let ds = polyclinicsAndDoctors[i].doctors;
+            for (var j = 0; j < ds.length; j++) {
+              d.push(ds[j].name);
+            }
+          }
+        }
+        setDoctors(d);
+        setDoctorsSelectIsDisabled(false);
+      }
+    };
+    setDoctorsSelect();
+  }, [selectedPolyclinic, polyclinicsAndDoctors]);
+
+  const searchAppointments = () => {
+    socket
+      .sendRequest('SEARCH_APPOINTMENTS', {
+        polyclinicName: selectedPolyclinic,
+        doctorName: selectedDoctor,
+        date: appointmentDate,
+      })
+      .then(async (data) => {
+        if (data) {
+          setAppointments(data.appointmentsTime);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+  const saveAppointment = (hour) => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('SAVE_APPOINTMENT ', {
+        userId: userId,
+        polyclinicName: selectedPolyclinic,
+        doctorName: selectedDoctor,
+        date: appointmentDate,
+        hour: hour,
+      })
+      .then(async (data) => {
+        if (data) {
+          setAppointments(data.appointmentsTime);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
 
   return (
     <Container
@@ -47,8 +118,19 @@ const MakeAppointmentDashboard = () => {
             }}
           >
             <Typography variant="h6">Randevu Ara</Typography>
-            <BasicSelect label="Klinik Seçiniz" />
-            <BasicSelect label="Doktor Seçiniz" />
+            <BasicSelect
+              label="Klinik Seçiniz"
+              value={selectedPolyclinic}
+              setValue={setSelectedPolyclinic}
+              items={polyclinics}
+            />
+            <BasicSelect
+              label="Doktor Seçiniz"
+              value={selectedDoctor}
+              setValue={setSelectedDoctor}
+              items={doctors}
+              isDisabled={doctorsSelectIsDisabled}
+            />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Randevu Tarihi Seçiniz"
@@ -59,7 +141,9 @@ const MakeAppointmentDashboard = () => {
               />
             </LocalizationProvider>
             <Button
-              type="submit"
+              onClick={() => {
+                searchAppointments();
+              }}
               fullWidth
               variant="contained"
               sx={{
@@ -84,10 +168,12 @@ const MakeAppointmentDashboard = () => {
           >
             <Typography variant="h6">Randevu Saatleri</Typography>
             <Grid container spacing={2}>
-              {appointments.map((appointment) => (
-                <Grid item xs={3}>
+              {appointments.map((appointment, index) => (
+                <Grid item xs={3} key={index}>
                   <Button
-                    type="submit"
+                    onClick={() => {
+                      saveAppointment(appointment.hour);
+                    }}
                     fullWidth
                     variant="contained"
                     sx={{
@@ -102,7 +188,7 @@ const MakeAppointmentDashboard = () => {
                         color: 'white',
                       },
                     }}
-                    disabled={appointment.isDisabled}
+                    disabled={appointment.isAvailable}
                   >
                     {appointment.hour}
                   </Button>

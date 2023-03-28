@@ -53,21 +53,12 @@ const columns = [
 ];
 
 const AdminDashboard = () => {
-  const [name, setName] = React.useState();
-  const [surname, setSurname] = React.useState();
-  const [tcnumber, setTcNumber] = React.useState();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
-  const [rows, setRows] = React.useState([
-    {
-      id: 1,
-      name: 'emre yasin',
-      surname: 'şallı',
-      tcnumber: '11111111',
-      username: 'emresalli',
-      password: '1234455',
-    },
-  ]);
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
+  const [tcnumber, setTcNumber] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [rows, setRows] = React.useState([]);
   const [selectedAdmins, setSelectedAdmins] = React.useState([]);
 
   const getAdmins = () => {

@@ -59,12 +59,12 @@ const columns = [
 ];
 
 const DoctorDashboard = () => {
-  const [name, setName] = React.useState();
-  const [surname, setSurname] = React.useState();
-  const [tcnumber, setTcNumber] = React.useState();
-  const [polyclinic, setPolyclinic] = React.useState();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
+  const [tcnumber, setTcNumber] = React.useState('');
+  const [polyclinic, setPolyclinic] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
 

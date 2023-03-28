@@ -5,7 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function BasicSelect({ value, setValue, items, label }) {
+export default function BasicSelect({
+  value,
+  setValue,
+  items,
+  label,
+  isDisabled,
+}) {
   const handleChange = (event) => {
     setValue(event.target.value);
   };
@@ -15,20 +21,19 @@ export default function BasicSelect({ value, setValue, items, label }) {
       <FormControl fullWidth margin="normal">
         <InputLabel id="demo-simple-select-label">{label}</InputLabel>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
+          defaultValue=""
           value={value}
           label={label}
+          disabled={isDisabled}
           onChange={handleChange}
         >
-          <MenuItem value="">None</MenuItem>
-          {/* {items.map((key, index) => {
+          {items.map((name, index) => {
             return (
-              <MenuItem value={key} key={index}>
-                {key}
+              <MenuItem value={name} key={index}>
+                {name}
               </MenuItem>
             );
-          })} */}
+          })}
         </Select>
       </FormControl>
     </Box>

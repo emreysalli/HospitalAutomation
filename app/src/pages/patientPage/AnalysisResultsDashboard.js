@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
+import { socket } from '../../services/socketServices';
 
 const AnalysisResultsDashboard = () => {
   const [analysisResults, setAnalysisResults] = React.useState([
@@ -33,6 +34,24 @@ const AnalysisResultsDashboard = () => {
       referenceValue: '0 - 200',
     },
   ]);
+
+  const getPatientAnalysisResults = () => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('GET_ PATIENT_ANALYSIS_RESULTS', { id: userId })
+      .then(async (data) => {
+        if (data) {
+          setAnalysisResults(data.analysisResults);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  React.useEffect(() => {
+    getPatientAnalysisResults();
+  }, []);
 
   return (
     <Container
@@ -75,6 +94,7 @@ const AnalysisResultsDashboard = () => {
               backgroundColor: index % 2 === 0 ? '#F7F7FC' : '#FFFFFF',
               paddingX: 1,
             }}
+            key={index}
           >
             <Grid container spacing={2} my={1}>
               <Grid item xs={4} md={2}>
