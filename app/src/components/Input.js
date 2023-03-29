@@ -25,6 +25,7 @@ const Input = ({
       onChange={handleChange}
       label={label}
       name={id}
+      rows={3}
     />
   );
 };

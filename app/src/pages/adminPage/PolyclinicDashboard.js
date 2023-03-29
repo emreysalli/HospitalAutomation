@@ -19,7 +19,7 @@ const columns = [
 const PolyclinicDashboard = () => {
   const [rows, setRows] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
-  const [polyclinicName, setPolyclinicName] = React.useState();
+  const [polyclinicName, setPolyclinicName] = React.useState('');
 
   const getPolyclinics = async () => {
     try {

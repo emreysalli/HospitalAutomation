@@ -11,10 +11,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { socket } from '../../services/socketServices';
 
 const PrescriptionsDashboard = () => {
   const [showDialog, setShowDialog] = React.useState(null);
-
   const [prescriptions, setPrescriptions] = React.useState([
     {
       id: 1,
@@ -86,6 +86,24 @@ const PrescriptionsDashboard = () => {
       ],
     },
   ]);
+  const getPatientPrescriptions = () => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('GET_ PATIENT_PRESCRIPTIONS', { id: userId })
+      .then(async (data) => {
+        if (data) {
+          setPrescriptions(data.prescriptions);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  React.useEffect(() => {
+    getPatientPrescriptions();
+  }, []);
+
   const renderConfirmDialog = () => {
     if (!showDialog) {
       return null;
@@ -144,6 +162,7 @@ const PrescriptionsDashboard = () => {
               sx={{
                 paddingX: 1,
               }}
+              key={index}
             >
               <Grid container spacing={3} my={1}>
                 <Grid item xs={2}>
@@ -208,6 +227,7 @@ const PrescriptionsDashboard = () => {
             sx={{
               paddingX: 1,
             }}
+            key={index}
           >
             <Grid container spacing={2} my={1}>
               <Grid item xs={3}>

@@ -5,31 +5,68 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Divider } from '@mui/material';
+import { socket } from '../../services/socketServices';
 
 const AppointmentsDashboard = () => {
   const [userAppointments, setUserAppointments] = React.useState([
     {
       id: 1,
       polyclinic: 'Dahiliye',
-      appointmentDate: '12.09.2022',
+      date: '12.09.2022',
       hour: '08:30',
       doctor: 'emre yasin şallı',
     },
     {
       id: 2,
       polyclinic: 'Dahiliye',
-      appointmentDate: '12.09.2022',
+      date: '12.09.2022',
       hour: '08:30',
       doctor: 'emre yasin şallı',
     },
     {
       id: 3,
       polyclinic: 'Dahiliye',
-      appointmentDate: '12.09.2022',
+      date: '12.09.2022',
       hour: '08:30',
       doctor: 'emre yasin şallı',
     },
   ]);
+
+  const getPatientAppointments = () => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('GET_ PATIENT_APPOINTMENTS', { id: userId })
+      .then(async (data) => {
+        if (data) {
+          setUserAppointments(data.appointments);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  const cancelPatientAppointments = (appointmentId) => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('CANCEL_ PATIENT_APPOINTMENTS', {
+        id: userId,
+        appointmentId: appointmentId,
+      })
+      .then(async (data) => {
+        if (data) {
+          alert('Randevu iptal edildi.');
+          getPatientAppointments();
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  React.useEffect(() => {
+    getPatientAppointments();
+  }, []);
 
   return (
     <Container
@@ -46,8 +83,8 @@ const AppointmentsDashboard = () => {
         }}
       >
         <Typography variant="h6">Randevularım</Typography>
-        {userAppointments.map((appointment) => (
-          <>
+        {userAppointments.map((appointment, index) => (
+          <div key={index}>
             <Grid container spacing={2} my={1}>
               <Grid
                 item
@@ -66,23 +103,33 @@ const AppointmentsDashboard = () => {
                     paddingX: '2%',
                   }}
                 >
-                  {appointment.appointmentDate} {appointment.hour}
+                  {appointment.date} {appointment.hour}
                 </Paper>
               </Grid>
               <Grid item xs={6} md={3} sx={{ display: 'flex' }}>
-                <i class="fa-regular fa-hospital" /> {appointment.polyclinic}
+                <i
+                  className="fa-regular fa-hospital"
+                  style={{ marginRight: 10 }}
+                />
+                {appointment.polyclinic}
               </Grid>
               <Grid item xs={6} md={4}>
-                <i class="fa-solid fa-stethoscope"></i> {appointment.doctor}
+                <i className="fa-solid fa-stethoscope"></i> {appointment.doctor}
               </Grid>
               <Grid item xs={6} md={2}>
-                <Button variant="contained" color="error">
-                  <i class="fa-regular fa-circle-xmark"></i>
+                <Button
+                  onClick={() => {
+                    cancelPatientAppointments(appointment.id);
+                  }}
+                  variant="contained"
+                  color="error"
+                >
+                  <i className="fa-regular fa-circle-xmark"></i>
                 </Button>
               </Grid>
             </Grid>
             <Divider />
-          </>
+          </div>
         ))}
       </Paper>
     </Container>

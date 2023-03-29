@@ -4,7 +4,6 @@ function SocketService() {
   this.connectSocket = () => {
     try {
       this.socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
-      console.log(`${process.env.REACT_APP_SOCKET_URL}`);
       this.socket.on('connect', (data) => {
         console.log('socket connected');
         return socket;

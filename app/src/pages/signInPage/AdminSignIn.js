@@ -14,8 +14,8 @@ import { useNavigate } from 'react-router-dom';
 const AdminSignIn = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();

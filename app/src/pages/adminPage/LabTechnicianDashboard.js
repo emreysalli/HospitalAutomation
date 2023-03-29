@@ -53,11 +53,11 @@ const columns = [
 ];
 
 const LabTechnicianDashboard = () => {
-  const [name, setName] = React.useState();
-  const [surname, setSurname] = React.useState();
-  const [tcnumber, setTcNumber] = React.useState();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
+  const [tcnumber, setTcNumber] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectedLabTechnicians, setSelectedLabTechnicians] = React.useState(
     []
@@ -68,7 +68,7 @@ const LabTechnicianDashboard = () => {
       .sendRequestWithoutArgs('GET_LABTECHNICIANS')
       .then(async (data) => {
         if (data) {
-          setRows(data.admins);
+          setRows(data.labTechnicians);
         }
       })
       .catch((err) => {

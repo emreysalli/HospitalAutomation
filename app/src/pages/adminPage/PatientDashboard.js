@@ -95,17 +95,17 @@ const columns = [
 ];
 
 const PatientDashboard = () => {
-  const [name, setName] = React.useState();
-  const [surname, setSurname] = React.useState();
-  const [tcnumber, setTcNumber] = React.useState();
-  const [gender, setGender] = React.useState();
-  const [bloodGroup, setBloodGroup] = React.useState();
-  const [birthplace, setBirthplace] = React.useState();
-  const [birthdate, setBirthdate] = React.useState();
-  const [phoneNumber, setPhoneNumber] = React.useState();
-  const [address, setAddress] = React.useState();
-  const [username, setUsername] = React.useState();
-  const [password, setPassword] = React.useState();
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
+  const [tcnumber, setTcNumber] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [bloodGroup, setBloodGroup] = React.useState('');
+  const [birthplace, setBirthplace] = React.useState('');
+  const [birthdate, setBirthdate] = React.useState('');
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [address, setAddress] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
 
