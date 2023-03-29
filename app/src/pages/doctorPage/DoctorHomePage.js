@@ -5,34 +5,29 @@ import { Outlet } from 'react-router-dom';
 export default function DoctorHomePage() {
   const listItems = [
     {
-      label: 'Kullanıcı',
+      label: 'Hesap Bilgileri',
       iconClassName: 'fa-solid fa-user',
-      linkTo: 'admin',
+      linkTo: 'account-info',
     },
     {
       label: 'Randevularım',
-      iconClassName: 'fa-solid fa-user-doctor',
-      linkTo: 'doctors',
+      iconClassName: 'fa-solid fa-calendar-plus',
+      linkTo: 'appointments',
     },
     {
       label: 'Bekleyen Hasta',
-      iconClassName: 'fa-solid fa-house-chimney-medical',
-      linkTo: 'polyclinics',
+      iconClassName: 'fa-solid fa-people-group',
+      linkTo: 'patient-waiting',
+    },
+    {
+      label: 'Hasta Muayene',
+      iconClassName: 'fa-solid fa-hospital-user',
+      linkTo: 'patient-examination',
     },
     {
       label: 'Tahlil Sonuçları',
-      iconClassName: 'fa-solid fa-flask-vial',
-      linkTo: 'labtechnicians',
-    },
-    {
-      label: 'Hasta Kabul Personeller',
-      iconClassName: 'fa-solid fa-user-nurse',
-      linkTo: 'staff',
-    },
-    {
-      label: 'Hastalar',
-      iconClassName: 'fa-solid fa-hospital-user',
-      linkTo: 'patients',
+      iconClassName: 'fa-solid fa-vials',
+      linkTo: 'patient-analysis-results',
     },
     {
       label: 'İletişim',

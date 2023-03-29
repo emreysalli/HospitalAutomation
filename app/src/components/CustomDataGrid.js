@@ -166,7 +166,7 @@ export default function AskConfirmationBeforeSave({
         columns={columns}
         processRowUpdate={processRowUpdate}
         experimentalFeatures={{ newEditingApi: true }}
-        pageSize={5}
+        pageSize={10}
         rowsPerPageOptions={[5]}
         checkboxSelection
         disableSelectionOnClick

@@ -9,6 +9,7 @@ const Input = ({
   isMultiline,
   type,
   margin,
+  isDisabled,
 }) => {
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -20,6 +21,7 @@ const Input = ({
       required={isRequired}
       fullWidth
       multiline={isMultiline}
+      disabled={isDisabled}
       id={id}
       value={value}
       onChange={handleChange}

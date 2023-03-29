@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { socket } from '../../services/socketServices';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-const DoctorSignIn = () => {
+const StaffSignIn = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [username, setUsername] = React.useState('');
@@ -24,13 +24,12 @@ const DoctorSignIn = () => {
       username: username,
       password: password,
     };
-    await login({ role: 'doctor' });
-    navigate('/', { replace: true });
+
     socket
-      .sendRequest('DOCTOR_LOGIN', userInfo)
+      .sendRequest('STAFF_LOGIN', userInfo)
       .then(async (data) => {
         if (data?.userPresent) {
-          await login({ role: 'doctor' });
+          await login({ role: 'staff' });
           navigate('/', { replace: true });
         } else {
           alert('Kullanıcı adı veya parola hatalı.');
@@ -56,7 +55,7 @@ const DoctorSignIn = () => {
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Doktor Giriş
+        Hasta Kabul Personel Giriş
       </Typography>
       <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
         <Input
@@ -94,4 +93,4 @@ const DoctorSignIn = () => {
   );
 };
 
-export default DoctorSignIn;
+export default StaffSignIn;

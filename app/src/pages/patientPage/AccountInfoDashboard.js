@@ -29,7 +29,7 @@ const AccountInfoDashboard = () => {
   const getPatientInfo = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_ PATIENT_INFO', { id: userId })
+      .sendRequest('GET_PATIENT_INFO', { id: userId })
       .then(async (data) => {
         if (data) {
           setName(data.patientInfo.name);

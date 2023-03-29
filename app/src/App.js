@@ -29,6 +29,14 @@ import AppointmentsDashboard from './pages/patientPage/AppointmentsDashboard';
 import PastAppointmentsDashboard from './pages/patientPage/PastAppointmentsDashboard';
 import AnalysisResultsDashboard from './pages/patientPage/AnalysisResultsDashboard';
 import PrescriptionsDashboard from './pages/patientPage/PrescriptionsDashboard';
+import DoctorAccountInfoDashboard from './pages/doctorPage/DoctorAccountInfoDashboard';
+import DoctorAppointmentsDashboard from './pages/doctorPage/DoctorAppointmentsDashboard';
+import PaitingWaitingDashboard from './pages/doctorPage/PaitingWaitingDashboard';
+import PatientExaminationDashboard from './pages/doctorPage/PatientExaminationDashboard';
+import PatientAnalysisResultDashboard from './pages/doctorPage/PatientAnalysisResultDashboard';
+import StaffSignIn from './pages/signInPage/StaffSignIn';
+import LabTechnicianSignIn from './pages/signInPage/LabTechnicianSignIn';
+
 const theme = createTheme({
   palette: {
     background: {
@@ -36,6 +44,7 @@ const theme = createTheme({
     },
   },
 });
+
 const App = () => {
   const [user, setUser] = React.useState(null);
   const authContext = useMemo(
@@ -85,6 +94,11 @@ const App = () => {
                   <Route path="patient" element={<PatientSignIn />} />
                   <Route path="doctor" element={<DoctorSignIn />} />
                   <Route path="patientsignup" element={<PatientSignUp />} />
+                  <Route path="staff" element={<StaffSignIn />} />
+                  <Route
+                    path="labtechnician"
+                    element={<LabTechnicianSignIn />}
+                  />
                 </Route>
               </>
             ) : (
@@ -108,7 +122,30 @@ const App = () => {
                   </Route>
                 ) : user.role === 'doctor' ? (
                   /* doktor paneli */
-                  <Route path="/" element={<DoctorHomePage />}></Route>
+                  <Route path="/" element={<DoctorHomePage />}>
+                    <Route path="" element={<WelcomePage />} />
+                    <Route
+                      path="account-info"
+                      element={<DoctorAccountInfoDashboard />}
+                    />
+                    <Route
+                      path="appointments"
+                      element={<DoctorAppointmentsDashboard />}
+                    />
+                    <Route
+                      path="patient-waiting"
+                      element={<PaitingWaitingDashboard />}
+                    />
+                    <Route
+                      path="patient-examination"
+                      element={<PatientExaminationDashboard />}
+                    />
+                    <Route
+                      path="patient-analysis-results"
+                      element={<PatientAnalysisResultDashboard />}
+                    />
+                    <Route path="inbox" element={<Inbox />} />
+                  </Route>
                 ) : user.role === 'staff' ? (
                   /* hasta kabul personel paneli */
                   <Route path="/staff"></Route>
@@ -150,7 +187,6 @@ const App = () => {
                 )}
               </>
             )}
-            <Route path="*" element={<NoMatch />} />
           </Routes>
         </BrowserRouter>
       </AuthContext.Provider>
