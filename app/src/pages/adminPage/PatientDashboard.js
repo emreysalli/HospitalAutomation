@@ -263,6 +263,7 @@ const PatientDashboard = () => {
               <DatePicker
                 label="Doğum Tarihi"
                 margin="normal"
+                format="DD/MM/YYYY"
                 value={birthdate}
                 onChange={(value) => setBirthdate(value)}
                 required

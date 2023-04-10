@@ -36,6 +36,9 @@ import PatientExaminationDashboard from './pages/doctorPage/PatientExaminationDa
 import PatientAnalysisResultDashboard from './pages/doctorPage/PatientAnalysisResultDashboard';
 import StaffSignIn from './pages/signInPage/StaffSignIn';
 import LabTechnicianSignIn from './pages/signInPage/LabTechnicianSignIn';
+import LabTechnicianHomePage from './pages/labTechnicianPage/LabTechnicianHomePage';
+import LabTechnicianAccountInfoDashboard from './pages/labTechnicianPage/LabTechnicianAccountInfoDashboard';
+import LTPatientAnalysisResultDashboard from './pages/labTechnicianPage/LTPatientAnalysisResultDashboard';
 
 const theme = createTheme({
   palette: {
@@ -151,7 +154,18 @@ const App = () => {
                   <Route path="/staff"></Route>
                 ) : user.role === 'labtechnician' ? (
                   /* laborant paneli */
-                  <Route path="/labtechnician"></Route>
+                  <Route path="/" element={<LabTechnicianHomePage />}>
+                    <Route path="" element={<WelcomePage />} />
+                    <Route
+                      path="account-info"
+                      element={<LabTechnicianAccountInfoDashboard />}
+                    />
+                    <Route
+                      path="patient-analysis-results"
+                      element={<LTPatientAnalysisResultDashboard />}
+                    />
+                    <Route path="inbox" element={<Inbox />} />
+                  </Route>
                 ) : user.role === 'patient' ? (
                   /* hasta paneli */
                   <Route path="/" element={<PatientHomePage />}>

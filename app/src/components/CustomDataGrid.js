@@ -68,6 +68,7 @@ export default function AskConfirmationBeforeSave({
   selectionModel,
   setSelectionModel,
   socketUpdateMethodName,
+  isMustOneSelected,
 }) {
   const mutateRow = useFakeMutation();
   const noButtonRef = React.useRef(null);
@@ -167,11 +168,19 @@ export default function AskConfirmationBeforeSave({
         processRowUpdate={processRowUpdate}
         experimentalFeatures={{ newEditingApi: true }}
         pageSize={10}
-        rowsPerPageOptions={[5]}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         disableSelectionOnClick
-        onSelectionModelChange={(newSelectionModel) => {
-          setSelectionModel(newSelectionModel);
+        selectionModel={selectionModel}
+        onSelectionModelChange={(selection) => {
+          if (selection.length > 1 && isMustOneSelected) {
+            const selectionSet = selectionModel;
+            const result = selection.filter((s) => !selectionSet.includes(s));
+
+            setSelectionModel(result);
+          } else {
+            setSelectionModel(selection);
+          }
         }}
       />
       {!!snackbar && (

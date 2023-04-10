@@ -24,7 +24,8 @@ const LabTechnicianSignIn = () => {
       username: username,
       password: password,
     };
-
+    await login({ role: 'labtechnician' });
+    navigate('/', { replace: true });
     socket
       .sendRequest('LAB_TECHNICIAN_LOGIN', userInfo)
       .then(async (data) => {
