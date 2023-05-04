@@ -72,9 +72,16 @@ const PatientExaminationDashboard = () => {
   const [patientDiagnoses, setPatientDiagnoses] = React.useState([]);
   const [patientTests, setPatientTests] = React.useState([]);
 
+  const randomNumberInRange = () => {
+    let min = 1;
+    let max = 100;
+    // 👇️ get number between min (inclusive) and max (inclusive)
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
   const addMedicineToPrescription = () => {
     let m = {
-      id: 4,
+      id: randomNumberInRange(),
       medicineName: selectedMedicine,
       dose: selectedDose,
       period: selectedPeriod,
@@ -91,24 +98,37 @@ const PatientExaminationDashboard = () => {
     setSelectedTotalBox('');
   };
 
+  const removeMedicine = (id) => {
+    setPatientMedicines((prev) => prev.filter((el) => el.id !== id));
+  };
+
   const addDiagnosis = () => {
     let d = {
-      id: 1,
+      id: randomNumberInRange(),
       explanation: selectedExplanation,
       type: selectedType,
     };
+    console.log(d.id);
     setPatientDiagnoses([...patientDiagnoses, d]);
     setSelectedExplanation('');
     setSelectedType('');
   };
 
+  const removeDiagnosis = (id) => {
+    setPatientDiagnoses((prev) => prev.filter((el) => el.id !== id));
+  };
+
   const addTest = () => {
     let t = {
-      id: 1,
+      id: randomNumberInRange(),
       name: selectedTest,
     };
     setPatientTests([...patientTests, t]);
     setSelectedTest('');
+  };
+
+  const removeTest = (id) => {
+    setPatientTests((prev) => prev.filter((el) => el.id !== id));
   };
 
   return (
@@ -134,6 +154,9 @@ const PatientExaminationDashboard = () => {
               isRequired={true}
               value="1111111111"
             />
+            <Button onClick={() => {}} fullWidth variant="contained">
+              Hasta Bilgileri Göster
+            </Button>
             <Input
               id="name"
               label="Ad"
@@ -173,6 +196,7 @@ const PatientExaminationDashboard = () => {
               <DatePicker
                 disabled={true}
                 label="Doğum Tarihi"
+                format="DD/MM/YYYY"
                 margin="normal"
                 defaultValue={dayjs('2022-04-17')}
                 required
@@ -237,7 +261,9 @@ const PatientExaminationDashboard = () => {
                           </Grid>
                           <Grid item xs={2}>
                             <Button
-                              onClick={() => {}}
+                              onClick={() => {
+                                removeDiagnosis(diagnosis.id);
+                              }}
                               variant="contained"
                               color="error"
                             >
@@ -331,7 +357,9 @@ const PatientExaminationDashboard = () => {
                           </Grid>
                           <Grid item xs={2}>
                             <Button
-                              onClick={() => {}}
+                              onClick={() => {
+                                removeTest(test.id);
+                              }}
                               variant="contained"
                               color="error"
                             >
@@ -449,7 +477,9 @@ const PatientExaminationDashboard = () => {
                       </Grid>
                       <Grid item xs={2}>
                         <Button
-                          onClick={() => {}}
+                          onClick={() => {
+                            removeMedicine(medicine.id);
+                          }}
                           variant="contained"
                           color="error"
                         >

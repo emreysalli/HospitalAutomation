@@ -134,6 +134,7 @@ const MakeAppointmentDashboard = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Randevu Tarihi Seçiniz"
+                format="DD/MM/YYYY"
                 value={appointmentDate}
                 onChange={(value) => setAppointmentDate(value)}
                 required

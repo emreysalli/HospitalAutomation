@@ -139,6 +139,7 @@ const AccountInfoDashboard = () => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Doğum Tarihi"
+                  format="DD/MM/YYYY"
                   value={birthdate}
                   onChange={(value) => setBirthdate(value)}
                   required

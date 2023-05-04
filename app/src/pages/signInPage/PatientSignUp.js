@@ -126,6 +126,7 @@ const PatientSignUp = () => {
               label="Doğum Tarihi"
               value={birthdate}
               onChange={(value) => setBirthdate(value)}
+              format="DD/MM/YYYY"
               required
               sx={{ width: '100%' }}
             />

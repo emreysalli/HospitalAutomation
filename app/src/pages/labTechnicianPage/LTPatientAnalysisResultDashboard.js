@@ -1,15 +1,13 @@
 import React from 'react';
+import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
 import CustomDataGrid from '../../components/CustomDataGrid';
+import Input from './../../components/Input';
 import { socket } from '../../services/socketServices';
 
 const columns = [
@@ -41,8 +39,8 @@ const columns = [
     width: 120,
   },
 ];
-const today = dayjs();
-const DoctorAppointmentsDashboard = () => {
+
+const LTPatientAnalysisResultDashboard = () => {
   const [doctorAppointments, setDoctorAppointments] = React.useState([
     {
       id: 1,
@@ -70,7 +68,6 @@ const DoctorAppointmentsDashboard = () => {
     },
   ]);
   const [selectedPatients, setSelectedPatients] = React.useState([]);
-  const [appointmentDate, setAppointmentDate] = React.useState('');
 
   const getDoctorAppointments = () => {
     let userId = localStorage.getItem('id');
@@ -84,7 +81,6 @@ const DoctorAppointmentsDashboard = () => {
     socket
       .sendRequest('GET_DOCTOR_APPOINTMENTS', {
         id: userId,
-        date: appointmentDate !== '' ? currentDate : appointmentDate,
       })
       .then(async (data) => {
         if (data) {
@@ -107,7 +103,7 @@ const DoctorAppointmentsDashboard = () => {
       }}
     >
       <Grid container spacing={3}>
-        <Grid item xs={12} md={10} lg={9}>
+        <Grid item xs={12} md={8}>
           <Paper
             sx={{
               p: 2,
@@ -116,7 +112,7 @@ const DoctorAppointmentsDashboard = () => {
             }}
           >
             <Typography variant="h6" mb={1}>
-              Randevularım
+              İstenilen Hasta Tahlilleri
             </Typography>
             <CustomDataGrid
               rows={doctorAppointments}
@@ -125,17 +121,12 @@ const DoctorAppointmentsDashboard = () => {
               setSelectionModel={setSelectedPatients}
               isMustOneSelected={true}
             />
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={12} m={2}>
-              <Button onClick={() => {}} fullWidth variant="contained">
-                Seçili Hasta Muayene Ekranına Git
-              </Button>
-              <Button onClick={() => {}} fullWidth variant="contained">
-                Seçili Hasta Tahlilleri Göster
-              </Button>
-            </Stack>
+            <Button onClick={() => {}} fullWidth variant="contained">
+              Seçili Tahlile Sonuç Gir
+            </Button>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={2} lg={3}>
+        <Grid item xs={12} md={4}>
           <Paper
             sx={{
               p: 2,
@@ -143,25 +134,20 @@ const DoctorAppointmentsDashboard = () => {
               flexDirection: 'column',
             }}
           >
-            <Typography variant="h6">Randevu Tarihi Seç</Typography>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Tarih"
-                margin="normal"
-                format="DD/MM/YYYY"
-                value={
-                  appointmentDate == '' ? dayjs(new Date()) : appointmentDate
-                }
-                onChange={(value) => {
-                  setAppointmentDate(value);
-                  // setAppointmentDate(
-                  //   new Date(value).toISOString().split('T')[0]
-                  // );
-                }}
-                required
-                sx={{ width: '100%', mt: 1 }}
-              />
-            </LocalizationProvider>
+            <Typography variant="h6">Hasta Tahlili</Typography>
+            <Input
+              id="date"
+              label="Seçili Hasta T.C. Kimlik No"
+              isRequired={true}
+            />
+            <Input id="selectedTest" label="Seçili Test" isRequired={true} />
+            <Input id="date" label="Tarih" isRequired={true} />
+            <Input
+              id="testResult"
+              label="Test Sonucu"
+              isMultiline={true}
+              isRequired={true}
+            />
             <Button
               onClick={() => {
                 getDoctorAppointments();
@@ -171,7 +157,7 @@ const DoctorAppointmentsDashboard = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Randevuları Getir
+              Test Sonucu Gönder
             </Button>
           </Paper>
         </Grid>
@@ -180,4 +166,4 @@ const DoctorAppointmentsDashboard = () => {
   );
 };
 
-export default DoctorAppointmentsDashboard;
+export default LTPatientAnalysisResultDashboard;
