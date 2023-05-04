@@ -24,11 +24,10 @@ const PatientSignIn = () => {
       username: username,
       password: password,
     };
-    await login({ role: 'patient' });
-    navigate('/', { replace: true });
     socket
       .sendRequest('PATIENT_LOGIN', userInfo)
       .then(async (data) => {
+        console.log(data);
         if (data?.userPresent) {
           await login({ role: 'patient', id: data?.id });
           navigate('/', { replace: true });

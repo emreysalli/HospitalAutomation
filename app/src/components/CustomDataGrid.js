@@ -41,6 +41,9 @@ function computeMutation(newRow, oldRow) {
   if (newRow.polyclinic !== oldRow.polyclinic) {
     return `'${oldRow.polyclinic}' olan poliklinik '${newRow.polyclinic}' olarak değiştirilecektir.`;
   }
+  if (newRow.polyclinicName !== oldRow.polyclinicName) {
+    return `'${oldRow.polyclinicName}' olan poliklinik '${newRow.polyclinicName}' olarak değiştirilecektir.`;
+  }
   if (newRow.gender !== oldRow.gender) {
     return `'${oldRow.gender}' olan cinsiyet '${newRow.gender}' olarak değiştirilecektir.`;
   }

@@ -29,7 +29,7 @@ const AccountInfoDashboard = () => {
   const getPatientInfo = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_PATIENT_INFO', { id: userId })
+      .sendRequest('GET_PATIENT_INFO', { id: parseInt(userId) })
       .then(async (data) => {
         if (data) {
           setName(data.patientInfo.name);
@@ -53,7 +53,9 @@ const AccountInfoDashboard = () => {
 
   const updatePatient = async () => {
     try {
+      let userId = localStorage.getItem('id');
       let newPatientInfo = {
+        id: parseInt(userId),
         name: name,
         surname: surname,
         tcnumber: tcnumber,
@@ -68,7 +70,7 @@ const AccountInfoDashboard = () => {
         password: password,
       };
       await socket
-        .sendRequest('UPDATE_PATIENT_INFO', newPatientInfo)
+        .sendRequest('UPDATE_PATIENT', newPatientInfo)
         .then((data) => {
           if (data) {
             alert('Bilgiler güncellendi.');

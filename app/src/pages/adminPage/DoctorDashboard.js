@@ -93,6 +93,7 @@ const DoctorDashboard = () => {
         surname: surname,
         tcnumber: tcnumber,
         polyclinic: polyclinic,
+        polyclinicId: 3,
         username: username,
         password: password,
       };
@@ -105,6 +106,7 @@ const DoctorDashboard = () => {
           }
         })
         .catch((err) => {
+          alert('doktor eklenemedi');
           console.error(err.message);
         });
     } catch (err) {
