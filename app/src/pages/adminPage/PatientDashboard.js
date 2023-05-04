@@ -133,8 +133,13 @@ const PatientDashboard = () => {
         name: name,
         surname: surname,
         tcnumber: tcnumber,
+<<<<<<< HEAD
         gender: gender,
         bloodGroup: bloodGroup,
+=======
+        gender: "e",
+        bloodGroup: "A+",
+>>>>>>> 2b581b26d5271778b574a3c9d023f12e61707847
         birthPlace: birthplace,
         birthDate: birthdate,
         phoneNumber: phoneNumber,
