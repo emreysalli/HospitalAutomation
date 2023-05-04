@@ -24,7 +24,8 @@ const StaffSignIn = () => {
       username: username,
       password: password,
     };
-
+    await login({ role: 'staff' });
+    navigate('/', { replace: true });
     socket
       .sendRequest('STAFF_LOGIN', userInfo)
       .then(async (data) => {

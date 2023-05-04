@@ -41,17 +41,20 @@ function computeMutation(newRow, oldRow) {
   if (newRow.polyclinic !== oldRow.polyclinic) {
     return `'${oldRow.polyclinic}' olan poliklinik '${newRow.polyclinic}' olarak değiştirilecektir.`;
   }
+  if (newRow.polyclinicName !== oldRow.polyclinicName) {
+    return `'${oldRow.polyclinic}' olan poliklinik '${newRow.polyclinic}' olarak değiştirilecektir.`;
+  }
   if (newRow.gender !== oldRow.gender) {
     return `'${oldRow.gender}' olan cinsiyet '${newRow.gender}' olarak değiştirilecektir.`;
   }
   if (newRow.bloodGroup !== oldRow.bloodGroup) {
     return `'${oldRow.bloodGroup}' olan kan grubu '${newRow.bloodGroup}' olarak değiştirilecektir.`;
   }
-  if (newRow.birthplace !== oldRow.birthplace) {
-    return `'${oldRow.birthplace}' olan doğum yeri '${newRow.birthplace}' olarak değiştirilecektir.`;
+  if (newRow.birthPlace !== oldRow.birthPlace) {
+    return `'${oldRow.birthPlace}' olan doğum yeri '${newRow.birthPlace}' olarak değiştirilecektir.`;
   }
-  if (newRow.birthdate !== oldRow.birthdate) {
-    return `'${oldRow.birthdate}' olan doğum tarihi '${newRow.birthdate}' olarak değiştirilecektir.`;
+  if (newRow.birthDate !== oldRow.birthDate) {
+    return `'${oldRow.birthDate}' olan doğum tarihi '${newRow.birthDate}' olarak değiştirilecektir.`;
   }
   if (newRow.phoneNumber !== oldRow.phoneNumber) {
     return `'${oldRow.phoneNumber}' olan telefon numarası '${newRow.phoneNumber}' olarak değiştirilecektir.`;

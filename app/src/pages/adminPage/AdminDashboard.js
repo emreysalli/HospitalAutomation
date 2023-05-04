@@ -8,7 +8,7 @@ import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
 import DatagridPasswordInput from './../../components/DatagridPasswordInput';
-
+import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -60,6 +60,7 @@ const AdminDashboard = () => {
   const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectedAdmins, setSelectedAdmins] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const getAdmins = () => {
     socket
@@ -74,7 +75,7 @@ const AdminDashboard = () => {
       });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event, succes = 'success') => {
     event.preventDefault();
     let newAdminInfo = {
       name: name,
@@ -83,6 +84,7 @@ const AdminDashboard = () => {
       username: username,
       password: password,
     };
+    enqueueSnackbar('Yeni yönetici eklendi.', { succes });
     socket
       .sendRequest('ADD_ADMIN', newAdminInfo)
       .then(async (data) => {
