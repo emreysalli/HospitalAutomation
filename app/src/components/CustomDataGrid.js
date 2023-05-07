@@ -42,11 +42,7 @@ function computeMutation(newRow, oldRow) {
     return `'${oldRow.polyclinic}' olan poliklinik '${newRow.polyclinic}' olarak değiştirilecektir.`;
   }
   if (newRow.polyclinicName !== oldRow.polyclinicName) {
-<<<<<<< HEAD
-    return `'${oldRow.polyclinic}' olan poliklinik '${newRow.polyclinic}' olarak değiştirilecektir.`;
-=======
     return `'${oldRow.polyclinicName}' olan poliklinik '${newRow.polyclinicName}' olarak değiştirilecektir.`;
->>>>>>> 2b581b26d5271778b574a3c9d023f12e61707847
   }
   if (newRow.gender !== oldRow.gender) {
     return `'${oldRow.gender}' olan cinsiyet '${newRow.gender}' olarak değiştirilecektir.`;

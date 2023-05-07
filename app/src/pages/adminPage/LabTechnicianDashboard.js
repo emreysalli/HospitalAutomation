@@ -8,7 +8,7 @@ import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
 import DatagridPasswordInput from './../../components/DatagridPasswordInput';
-
+import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -44,11 +44,8 @@ const columns = [
         <DatagridPasswordInput val={params.value} />
       </div>
     ),
-    //description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 180,
-    // valueGetter: (params) =>
-    //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
 ];
 
@@ -62,7 +59,7 @@ const LabTechnicianDashboard = () => {
   const [selectedLabTechnicians, setSelectedLabTechnicians] = React.useState(
     []
   );
-
+  const { enqueueSnackbar } = useSnackbar();
   const getLabTechnicians = () => {
     socket
       .sendRequestWithoutArgs('GET_LABTECHNICIANS')
@@ -78,6 +75,18 @@ const LabTechnicianDashboard = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+    }
     let newLabTechnicianInfo = {
       name: name,
       surname: surname,
@@ -89,11 +98,18 @@ const LabTechnicianDashboard = () => {
       .sendRequest('ADD_LABTECHNICIAN', newLabTechnicianInfo)
       .then(async (data) => {
         if (data) {
-          alert('yeni LABORATUVAR TEKNİSYENİ eklendi.');
+          enqueueSnackbar({
+            message: 'Yeni laboratuvar teknisyeni eklendi.',
+            variant: 'success',
+          });
           getLabTechnicians();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Yeni laboratuvar teknisyeni eklenemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
@@ -103,11 +119,18 @@ const LabTechnicianDashboard = () => {
       .sendRequest('REMOVE_LABTECHNICIAN', selectedLabTechnicians)
       .then(async (data) => {
         if (data) {
-          alert('seçili LABORATUVAR TEKNİSYENler silindi.');
+          enqueueSnackbar({
+            message: 'Seçili laboratuvar teknisyenleri silindi.',
+            variant: 'success',
+          });
           getLabTechnicians();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Seçili laboratuvar teknisyenleri silinemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };

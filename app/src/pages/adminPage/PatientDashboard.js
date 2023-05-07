@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import { Stack } from '@mui/material';
 import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -11,7 +12,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { socket } from '../../services/socketServices';
 import DatagridPasswordInput from './../../components/DatagridPasswordInput';
 import PasswordInput from '../../components/PasswordInput';
-
+import BasicSelect from './../../components/BasicSelect';
+import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -86,11 +88,8 @@ const columns = [
         <DatagridPasswordInput val={params.value} />
       </div>
     ),
-    //description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 180,
-    // valueGetter: (params) =>
-    //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
 ];
 
@@ -108,13 +107,15 @@ const PatientDashboard = () => {
   const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const genders = ['e', 'k'];
+  const bloodGroups = ['A+', 'A-', 'B+', 'B-', '0+', '0-', 'AB+', 'AB-'];
 
   const getPatients = async () => {
     try {
       await socket
         .sendRequestWithoutArgs('GET_PATIENTS')
         .then((data) => {
-          console.log(data);
           if (data) {
             setRows(data.patients);
           }
@@ -128,18 +129,32 @@ const PatientDashboard = () => {
   };
 
   const addPatient = async () => {
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      gender === '' ||
+      bloodGroup === '' ||
+      birthplace === '' ||
+      birthdate === '' ||
+      phoneNumber === '' ||
+      address === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message:
+          'Ad, soyad, T.C. kimlik no, cinsiyet, kan grubu, doğum yeri, doğum tarihi, telefon numarası, adres, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+    }
     try {
       let newPatientInfo = {
         name: name,
         surname: surname,
         tcnumber: tcnumber,
-<<<<<<< HEAD
         gender: gender,
         bloodGroup: bloodGroup,
-=======
-        gender: "e",
-        bloodGroup: "A+",
->>>>>>> 2b581b26d5271778b574a3c9d023f12e61707847
         birthPlace: birthplace,
         birthDate: birthdate,
         phoneNumber: phoneNumber,
@@ -151,11 +166,18 @@ const PatientDashboard = () => {
         .sendRequest('ADD_PATIENT', newPatientInfo)
         .then((data) => {
           if (data) {
-            alert('yeni hasta eklendi.');
+            enqueueSnackbar({
+              message: 'Yeni hasta eklendi.',
+              variant: 'success',
+            });
             getPatients();
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Yeni hasta eklenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -170,11 +192,18 @@ const PatientDashboard = () => {
         .then((data) => {
           console.log(data);
           if (data) {
-            alert('seçili hastalar silindi.');
+            enqueueSnackbar({
+              message: 'Seçili hastalar silindi.',
+              variant: 'success',
+            });
             getPatients();
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Seçili hastalar silinemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -222,20 +251,23 @@ const PatientDashboard = () => {
             >
               Hasta Ekle
             </Typography>
-            <Input
-              id="name"
-              label="Ad"
-              isRequired={true}
-              value={name}
-              setValue={setName}
-            />
-            <Input
-              id="surname"
-              label="Soyad"
-              isRequired={true}
-              value={surname}
-              setValue={setSurname}
-            />
+            <Stack direction="row" spacing={2}>
+              <Input
+                id="name"
+                label="Ad"
+                isRequired={true}
+                margin={true}
+                value={name}
+                setValue={setName}
+              />
+              <Input
+                id="surname"
+                label="Soyad"
+                isRequired={true}
+                value={surname}
+                setValue={setSurname}
+              />
+            </Stack>
             <Input
               id="tcnumber"
               label="T.C. Kimlik No"
@@ -243,38 +275,41 @@ const PatientDashboard = () => {
               value={tcnumber}
               setValue={setTcNumber}
             />
-            <Input
-              id="gender"
-              label="Cinsiyet"
-              isRequired={true}
-              value={gender}
-              setValue={setGender}
-            />
-            <Input
-              id="bloodGroup"
-              label="Kan Grubu"
-              isRequired={true}
-              value={bloodGroup}
-              setValue={setBloodGroup}
-            />
-            <Input
-              id="birthplace"
-              label="Doğum Yeri"
-              isRequired={true}
-              value={birthplace}
-              setValue={setBirthplace}
-            />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Doğum Tarihi"
-                margin="normal"
-                format="DD/MM/YYYY"
-                value={birthdate}
-                onChange={(value) => setBirthdate(value)}
-                required
-                sx={{ width: '100%', mt: 1 }}
+            <Stack direction="row" spacing={2}>
+              <BasicSelect
+                label="Cinsiyet"
+                value={gender}
+                setValue={setGender}
+                items={genders}
               />
-            </LocalizationProvider>
+              <BasicSelect
+                label="Kan Grubu"
+                value={bloodGroup}
+                setValue={setBloodGroup}
+                items={bloodGroups}
+              />
+            </Stack>
+            <Stack direction="row" spacing={2} mt={1}>
+              <Input
+                id="birthplace"
+                label="Doğum Yeri"
+                isRequired={true}
+                margin={true}
+                value={birthplace}
+                setValue={setBirthplace}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Doğum Tarihi"
+                  margin="normal"
+                  format="DD/MM/YYYY"
+                  value={birthdate}
+                  onChange={(value) => setBirthdate(value)}
+                  required
+                  sx={{ width: '100%', mt: 1 }}
+                />
+              </LocalizationProvider>
+            </Stack>
             <Input
               id="phoneNumber"
               label="Cep Telefonu"

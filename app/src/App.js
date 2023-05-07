@@ -89,7 +89,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <SnackbarProvider
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-        autoHideDuration={1000}
+        autoHideDuration={4000}
       >
         <AuthContext.Provider value={authContext}>
           <CssBaseline />

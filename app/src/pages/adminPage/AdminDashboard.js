@@ -44,11 +44,8 @@ const columns = [
         <DatagridPasswordInput val={params.value} />
       </div>
     ),
-    //description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 180,
-    // valueGetter: (params) =>
-    //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
 ];
 
@@ -75,8 +72,20 @@ const AdminDashboard = () => {
       });
   };
 
-  const handleSubmit = (event, succes = 'success') => {
+  const handleSubmit = (event) => {
     event.preventDefault();
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+    }
     let newAdminInfo = {
       name: name,
       surname: surname,
@@ -84,16 +93,22 @@ const AdminDashboard = () => {
       username: username,
       password: password,
     };
-    enqueueSnackbar('Yeni yönetici eklendi.', { succes });
     socket
       .sendRequest('ADD_ADMIN', newAdminInfo)
       .then(async (data) => {
         if (data) {
-          alert('yeni yönetici eklendi.');
+          enqueueSnackbar({
+            message: 'Yeni yönetici eklendi.',
+            variant: 'success',
+          });
           getAdmins();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Yeni yönetici eklenemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
@@ -103,11 +118,18 @@ const AdminDashboard = () => {
       .sendRequest('REMOVE_ADMIN', selectedAdmins)
       .then(async (data) => {
         if (data) {
-          alert('seçili yöneticiler silindi.');
+          enqueueSnackbar({
+            message: 'Seçili yöneticiler silindi.',
+            variant: 'success',
+          });
           getAdmins();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Seçili yöneticiler silinemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
