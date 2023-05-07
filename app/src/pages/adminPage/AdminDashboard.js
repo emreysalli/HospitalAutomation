@@ -8,7 +8,7 @@ import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
 import DatagridPasswordInput from './../../components/DatagridPasswordInput';
-
+import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -44,11 +44,8 @@ const columns = [
         <DatagridPasswordInput val={params.value} />
       </div>
     ),
-    //description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 180,
-    // valueGetter: (params) =>
-    //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
 ];
 
@@ -60,6 +57,7 @@ const AdminDashboard = () => {
   const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectedAdmins, setSelectedAdmins] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const getAdmins = () => {
     socket
@@ -76,6 +74,18 @@ const AdminDashboard = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+    }
     let newAdminInfo = {
       name: name,
       surname: surname,
@@ -87,11 +97,18 @@ const AdminDashboard = () => {
       .sendRequest('ADD_ADMIN', newAdminInfo)
       .then(async (data) => {
         if (data) {
-          alert('yeni yönetici eklendi.');
+          enqueueSnackbar({
+            message: 'Yeni yönetici eklendi.',
+            variant: 'success',
+          });
           getAdmins();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Yeni yönetici eklenemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
@@ -101,11 +118,18 @@ const AdminDashboard = () => {
       .sendRequest('REMOVE_ADMIN', selectedAdmins)
       .then(async (data) => {
         if (data) {
-          alert('seçili yöneticiler silindi.');
+          enqueueSnackbar({
+            message: 'Seçili yöneticiler silindi.',
+            variant: 'success',
+          });
           getAdmins();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Seçili yöneticiler silinemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };

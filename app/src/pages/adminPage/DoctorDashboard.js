@@ -8,6 +8,8 @@ import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
 import DatagridPasswordInput from './../../components/DatagridPasswordInput';
+import BasicSelect from './../../components/BasicSelect';
+import { useSnackbar } from 'notistack';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -50,11 +52,8 @@ const columns = [
         <DatagridPasswordInput val={params.value} />
       </div>
     ),
-    //description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 180,
-    // valueGetter: (params) =>
-    //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
 ];
 
@@ -66,14 +65,38 @@ const DoctorDashboard = () => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
+  const [polyclinics, setPolyclinics] = React.useState([]);
+  const [polyclinicNames, setPolyclinicNames] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const getPolyclinics = async () => {
+    try {
+      let temp = [];
+      await socket
+        .sendRequestWithoutArgs('GET_POLYCLINICS')
+        .then((data) => {
+          if (data) {
+            setPolyclinics(data.polyclinics);
+            for (let i = 0; i < polyclinics; i++) {
+              temp.push(polyclinics[i].polyclinicName);
+            }
+            setPolyclinicNames(temp);
+          }
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getDoctors = async () => {
     try {
       await socket
         .sendRequestWithoutArgs('GET_DOCTORS')
         .then((data) => {
-          console.log(data);
           if (data) {
             setRows(data.doctors);
           }
@@ -87,13 +110,34 @@ const DoctorDashboard = () => {
   };
 
   const addDoctor = async () => {
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      polyclinic === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message:
+          'Ad, soyad, T.C. kimlik no, poliklinik, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+    }
     try {
+      let polyclinicId;
+      for (let i = 0; i < polyclinics; i++) {
+        if (polyclinics[i].polyclinicName === polyclinic) {
+          polyclinicId = polyclinics[i].id;
+          break;
+        }
+      }
       let doctorInfo = {
         name: name,
         surname: surname,
         tcnumber: tcnumber,
         polyclinic: polyclinic,
-        polyclinicId: 3,
+        polyclinicId: polyclinicId,
         username: username,
         password: password,
       };
@@ -101,12 +145,18 @@ const DoctorDashboard = () => {
         .sendRequest('ADD_DOCTOR', doctorInfo)
         .then((data) => {
           if (data) {
-            alert('yeni doktor eklendi.');
+            enqueueSnackbar({
+              message: 'Yeni doktor eklendi.',
+              variant: 'success',
+            });
             getDoctors();
           }
         })
         .catch((err) => {
-          alert('doktor eklenemedi');
+          enqueueSnackbar({
+            message: 'Yeni doktor eklenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -121,11 +171,18 @@ const DoctorDashboard = () => {
         .then((data) => {
           console.log(data);
           if (data) {
-            alert('seçili DOKTORLAR silindi.');
+            enqueueSnackbar({
+              message: 'Seçili doktorlar silindi.',
+              variant: 'success',
+            });
             getDoctors();
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Seçili doktorlar silinemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -135,6 +192,7 @@ const DoctorDashboard = () => {
 
   useEffect(() => {
     getDoctors();
+    getPolyclinics();
   }, []);
 
   return (
@@ -194,12 +252,11 @@ const DoctorDashboard = () => {
               value={tcnumber}
               setValue={setTcNumber}
             />
-            <Input
-              id="polyclinic"
+            <BasicSelect
               label="Poliklinik"
-              isRequired={true}
               value={polyclinic}
               setValue={setPolyclinic}
+              items={polyclinicNames}
             />
             <Input
               id="username"

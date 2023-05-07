@@ -8,7 +8,7 @@ import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
 import DatagridPasswordInput from './../../components/DatagridPasswordInput';
-
+import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -44,11 +44,8 @@ const columns = [
         <DatagridPasswordInput val={params.value} />
       </div>
     ),
-    //description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 180,
-    // valueGetter: (params) =>
-    //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
   },
 ];
 
@@ -60,7 +57,7 @@ const StaffDashboard = () => {
   const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [selectedStaff, setSelectedStaff] = React.useState([]);
-
+  const { enqueueSnackbar } = useSnackbar();
   const getStaff = () => {
     socket
       .sendRequestWithoutArgs('GET_STAFF')
@@ -76,6 +73,18 @@ const StaffDashboard = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+    }
     let newStaff = {
       name: name,
       surname: surname,
@@ -87,11 +96,18 @@ const StaffDashboard = () => {
       .sendRequest('ADD_STAFF', newStaff)
       .then(async (data) => {
         if (data) {
-          alert('yeni hasta kabul personel eklendi.');
+          enqueueSnackbar({
+            message: 'Yeni hasta kabul personel eklendi.',
+            variant: 'success',
+          });
           getStaff();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Yeni hasta kabul personel eklenemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
@@ -101,11 +117,18 @@ const StaffDashboard = () => {
       .sendRequest('REMOVE_STAFF', selectedStaff)
       .then(async (data) => {
         if (data) {
-          alert('seçili personeller silindi.');
+          enqueueSnackbar({
+            message: 'Seçili personeller silindi.',
+            variant: 'success',
+          });
           getStaff();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Seçili personeller silinemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };

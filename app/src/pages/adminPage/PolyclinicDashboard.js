@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Input from '../../components/Input';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -20,13 +21,13 @@ const PolyclinicDashboard = () => {
   const [rows, setRows] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
   const [polyclinicName, setPolyclinicName] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const getPolyclinics = async () => {
     try {
       await socket
         .sendRequestWithoutArgs('GET_POLYCLINICS')
         .then((data) => {
-          console.log(data);
           if (data) {
             setRows(data.polyclinics);
           }
@@ -41,6 +42,12 @@ const PolyclinicDashboard = () => {
 
   const addPolyclinic = async () => {
     try {
+      if (polyclinicName === '') {
+        enqueueSnackbar({
+          message: 'Poliklinik giriniz.',
+          variant: 'error',
+        });
+      }
       let polyclinicInfo = {
         polyclinicName: polyclinicName,
       };
@@ -48,11 +55,18 @@ const PolyclinicDashboard = () => {
         .sendRequest('ADD_POLYCLINIC', polyclinicInfo)
         .then((data) => {
           if (data) {
-            alert('yeni poliklinik eklendi.');
+            enqueueSnackbar({
+              message: 'Yeni poliklinik eklendi.',
+              variant: 'success',
+            });
             getPolyclinics();
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Yeni poliklinik eklenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -67,11 +81,18 @@ const PolyclinicDashboard = () => {
         .then((data) => {
           console.log(data);
           if (data) {
-            alert('seçili poliklinikler silindi.');
+            enqueueSnackbar({
+              message: 'Seçili poliklinikler silindi.',
+              variant: 'success',
+            });
             getPolyclinics();
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Seçili poliklinikler silinemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
