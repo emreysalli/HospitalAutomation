@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
 
     socket.on('ADMIN_LOGIN', (data, callback) => {
         var authQuery = "SELECT EXISTS(SELECT 1 FROM admins WHERE username = '"+ data.username +"' AND password = '"+ data.password +"') AS present"
-        console.log(data);
+        
         conn.query(authQuery, function(err, result) {
             if (err) {
                 callback({
@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
         })
     });
     socket.on('ADD_ADMIN', (data, callback) => {
-        console.log(data);
+        
         var insertQuery = "INSERT INTO admins (username, password, name, surname, tcnumber) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "', '" + data.surname + "','" + data.tcnumber + "')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
         });
     });
     socket.on('REMOVE_ADMIN', (data, callback) => {
-        console.log(data);
+        
         for (let index = 0; index < data.length; index++) {
             var deleteQuery = "DELETE FROM admins WHERE id=" + data[index] + ""
             conn.query(deleteQuery, function(err, result) {
@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('UPDATE_ADMIN', (data, callback) => {
-        console.log(data);
+        
         var updateQuery = "UPDATE admins SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
@@ -132,7 +132,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('ADD_DOCTOR', (data, callback) => {
-        console.log(data);
+        
         var insertQuery = "INSERT INTO doctors (username, password, name, surname, tcnumber, polyclinic, polyclinicId) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "', '" + data.surname + "','" + data.tcnumber + "','" + data.polyclinic + "','" + data.polyclinicId + "')"
         conn.query(insertQuery, function(err, result) {
             console.log(err);
@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
         })
     });
     socket.on('REMOVE_DOCTOR', (data, callback) => {
-        console.log(data);
+        
         for (let index = 0; index < data.length; index++) {
             var deleteQuery = "DELETE FROM doctors WHERE id=" + data[index] + ""
             conn.query(deleteQuery, function(err, result) {
@@ -168,7 +168,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('UPDATE_DOCTOR', (data, callback) => {
-        console.log(data);
+        
         var updateQuery = "UPDATE doctors SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "',polyclinic = '" + data.polyclinic + "' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
@@ -200,7 +200,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_POLYCLINIC', (data, callback) => {
-        console.log(data);
+        
         var insertQuery = "INSERT INTO polyclinics (polyclinicName) VALUES ('" + data.polyclinicName + "')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
@@ -215,7 +215,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('REMOVE_POLYCLINIC', (data, callback) => {
-        console.log(data);
+        
         for (let index = 0; index < data.length; index++) {
             var deleteQuery = "DELETE FROM polyclinics WHERE id=" + data[index] + ""
             conn.query(deleteQuery, function(err, result) {
@@ -233,7 +233,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('UPDATE_POLYCLINIC', (data, callback) => {
-        console.log(data);
+        
         var updateQuery = "UPDATE polyclinics SET polyclinicName = '" + data.polyclinicName + "' WHERE id = '"+ data.id +"'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
@@ -265,7 +265,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_LABTECHNICIAN', (data, callback) => {
-        console.log(data);
+        
         var insertQuery = "INSERT INTO labtechnicians (username, password, name, surname, tcnumber) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "','" + data.surname + "','" + data.tcnumber + "')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
@@ -280,7 +280,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('REMOVE_LABTECHNICIAN', (data, callback) => {
-        console.log(data);
+        
         for (let index = 0; index < data.length; index++) {
             var deleteQuery = "DELETE FROM labtechnicians WHERE id=" + data[index] + ""
             conn.query(deleteQuery, function(err, result) {
@@ -298,7 +298,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('UPDATE_LABTECHNICIAN', (data, callback) => {
-        console.log(data);
+        
         var updateQuery = "UPDATE labtechnicians SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
@@ -330,7 +330,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_STAFF', (data, callback) => {
-        console.log(data);
+        
         var insertQuery = "INSERT INTO staff (username, password, name, surname, tcnumber) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "','" + data.surname + "','" + data.tcnumber + "')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
@@ -345,7 +345,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('REMOVE_STAFF', (data, callback) => {
-        console.log(data);
+        
         for (let index = 0; index < data.length; index++) {
             var deleteQuery = "DELETE FROM staff WHERE id=" + data[index] + ""
             conn.query(deleteQuery, function(err, result) {
@@ -363,7 +363,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('UPDATE_STAFF', (data, callback) => {
-        console.log(data);
+        
         var updateQuery = "UPDATE staff SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
@@ -395,7 +395,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_PATIENT', (data, callback) => {
-        console.log(data);
+        
         var insertQuery = "INSERT INTO patients (username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, birthDate, phoneNumber, address) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "','" + data.surname + "','" + data.tcnumber + "','" + data.gender + "','" + data.bloodGroup + "','" + data.birthPlace + "','" + data.birthDate + "','" + data.phoneNumber + "','" + data.address + "')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
@@ -410,7 +410,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('REMOVE_PATIENT', (data, callback) => {
-        console.log(data);
+        
         for (let index = 0; index < data.length; index++) {
             var deleteQuery = "DELETE FROM patients WHERE id=" + data[index] + ""
             conn.query(deleteQuery, function(err, result) {
@@ -429,7 +429,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('UPDATE_PATIENT', (data, callback) => {
-        console.log(data);
+        
         var updateQuery = "UPDATE patients SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "',gender = '" + data.gender + "',bloodGroup = '" + data.bloodGroup + "',birthPlace = '" + data.birthPlace + "',birthDate = '" + data.birthDate + "',phoneNumber = '" + data.phoneNumber + "',address = '" + data.address + "' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
@@ -446,7 +446,7 @@ io.on('connection', (socket) => {
 
     socket.on('PATIENT_LOGIN', (data, callback) => {
         var authQuery = "SELECT EXISTS(SELECT 1 FROM patients WHERE username = '"+ data.username +"' AND password = '"+ data.password +"') AS present"
-        console.log(data);
+        
         conn.query(authQuery, function(err, result) {
             if (err) {
                 callback({
@@ -476,7 +476,7 @@ io.on('connection', (socket) => {
 
     socket.on('GET_PATIENT_INFO', (data, callback) => {
         var authQuery = "SELECT * from patients WHERE id = '"+ data.id +"'"
-        console.log(data);
+        
         conn.query(authQuery, function(err, result) {
             if (err) {
                 callback({
@@ -503,11 +503,59 @@ io.on('connection', (socket) => {
             });
         })
     });
+
+    socket.on('GET_PATIENT_PRESCRIPTIONS', (data, callback) => {
+        var selectQuery = "SELECT p.id, p.date, p.prescriptionNo, p.patientId, p.doctorId, CONCAT(d.name,' ',d.surname) as doctor FROM prescriptions as p INNER JOIN doctors as d ON d.id = doctorId WHERE p.patientId = '"+ data.id +"'"
+        
+        conn.query(selectQuery, function(err, result) {
+            console.log(result);
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data:{prescriptions:result}
+            });
+        })
+    });
+
+    socket.on('GET_PATIENT_MEDICINES', (data, callback) => {
+        var selectQuery = "SELECT * from medicines WHERE prescriptionId = '"+ data.prescriptionId +"'"
+        
+        conn.query(selectQuery, function(err, result) {
+            console.log(result);
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data:{prescriptions:result}
+            });
+        })
+    });
+
+    socket.on('GET_PATIENT_ANALYSIS_RESULTS', (data, callback) => {
+        var selectQuery = "SELECT * FROM analysisResults where id=" + data.id + ""
+        conn.query(selectQuery, function(err, result) {
+            console.log(data);
+            console.log(result);
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {analysisResults:result}
+            });
+        })
+    });
     //BITMEDI SELECT p.id,p.polyclinicName from polyclinics as p WHERE p.id IN (SELECT d.polyclinicId from doctors as d);
 
     socket.on('GET_POLYCLINICS_AND_DOCTORS', (data, callback) => {
         var authQuery = "SELECT name, surname FROM doctors WHERE polyclinicId = '"+ data.polyclinicId +"'"
-        console.log(data);
+        
         conn.query(authQuery, function(err, result) {
             console.log(result);
         })
@@ -515,7 +563,7 @@ io.on('connection', (socket) => {
 
     socket.on('SEARCH_APPOINTMENTS', (data, callback) => {
         var authQuery = "SELECT * from appointments as a, patients as p WHERE a.'"+ data.id +"' = a.patientId"
-        console.log(data);
+        
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
@@ -530,7 +578,7 @@ io.on('connection', (socket) => {
 
     socket.on('SAVE_APPOINTMENTS', (data, callback) => {
         var insertQuery = "INSERT INTO appointments (polyclinicName, doctorId, patientId, appointmentDate) VALUES ('" + data.polyclinicName + "', '" + data.doctorId + "','" + data.patientId + "','" + data.appointmentDate + "')"
-        console.log(data);
+        
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
@@ -545,7 +593,7 @@ io.on('connection', (socket) => {
 
     socket.on('CANCEL_PATIENT_APPOINTMENTS', (data, callback) => {
         var deleteQuery = "DELETE FROM appointments WHERE id=" + data[index] + ""
-        console.log(data);
+        
         conn.query(deleteQuery, function(err, result) {
             if (err) {
                 callback({
@@ -558,16 +606,6 @@ io.on('connection', (socket) => {
         })
     });
 
-    socket.on('GET_PATIENT_ANALYSIS_RESULTS', (callback) => {
-        var selectQuery = "SELECT * FROM analysisResults where id=" + data.id + ""
-        conn.query(selectQuery, function(err, result) {
-            if (err) {
-                callback({
-                    error: err
-                });
-            }
-        })
-    });
 });
 
 server.listen(3001, () => {
