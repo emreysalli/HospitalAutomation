@@ -81,11 +81,7 @@ const PatientSignIn = () => {
           Giriş Yap
         </Button>
         <Grid container>
-          <Grid item xs>
-            <Link href="#" variant="body2">
-              Şifremi Unuttum
-            </Link>
-          </Grid>
+          <Grid item xs></Grid>
           <Grid item>
             <Link to="../patientsignup" variant="body2">
               Hesabınız yok mu? Üye Ol
