@@ -84,8 +84,12 @@ const MakeAppointmentDashboard = () => {
       .sendRequest('SEARCH_APPOINTMENTS', appointmentInfo)
       .then(async (data) => {
         if (data) {
-          console.log(data);
-          setAppointments(data.appointmentsTime);
+          let a=[];
+          let b=data.appointments;
+          for (let index = 0; index < b.length; index++) {
+            a.push(b[index].appointmentHour);
+          }
+          setAppointments(a);
           setHoursIsDisabled(true);
         }
       })
