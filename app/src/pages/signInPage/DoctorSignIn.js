@@ -31,11 +31,10 @@ const DoctorSignIn = () => {
       username: username,
       password: password,
     };
-    await login({ role: 'doctor' });
-    navigate('/', { replace: true });
     socket
       .sendRequest('DOCTOR_LOGIN', userInfo)
       .then(async (data) => {
+        console.log(data)
         if (data?.userPresent) {
           await login({ role: 'doctor' });
           navigate('/', { replace: true });
