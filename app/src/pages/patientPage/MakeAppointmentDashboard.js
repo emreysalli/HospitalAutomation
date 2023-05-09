@@ -3,12 +3,19 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import BasicSelect from '../../components/BasicSelect';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { socket } from '../../services/socketServices';
+import dayjs from 'dayjs';
+
+const hours = ["08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00", "13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"]
 
 const MakeAppointmentDashboard = () => {
   const [appointmentDate, setAppointmentDate] = React.useState('');
@@ -16,24 +23,16 @@ const MakeAppointmentDashboard = () => {
   const [selectedDoctor, setSelectedDoctor] = React.useState('');
   const [polyclinics, setPolyclinics] = React.useState([]);
   const [doctors, setDoctors] = React.useState([]);
-  const [doctorsSelectIsDisabled, setDoctorsSelectIsDisabled] = React.useState(
-    true
-  );
-  const [polyclinicsAndDoctors, setPolyclinicsAndDoctors] = React.useState([]);
+  const [doctorsSelectIsDisabled, setDoctorsSelectIsDisabled] = React.useState(true);
+  const [hoursIsDisabled, setHoursIsDisabled] = React.useState(false);
   const [appointments, setAppointments] = React.useState([]);
 
-  const getPolyclinicsAndDoctors = () => {
+  const getPolyclinics = () => {
     socket
-      .sendRequestWithoutArgs('GET_POLYCLINICS_AND_DOCTORS')
+      .sendRequestWithoutArgs('GET_POLYCLINICS')
       .then(async (data) => {
         if (data) {
-          setPolyclinicsAndDoctors(data.polyclinicsAndDoctors);
-          var p = [];
-
-          for (var i = 0; i < data.polyclinicsAndDoctors.length; i++) {
-            p.push(data.polyclinicsAndDoctors[i].polyclinic);
-          }
-          setPolyclinics(p);
+          setPolyclinics(data.polyclinics);
         }
       })
       .catch((err) => {
@@ -41,51 +40,65 @@ const MakeAppointmentDashboard = () => {
       });
   };
 
+  const handleChange = (event) => {
+    setSelectedPolyclinic(event.target.value);
+  };
+
+  const handleChangeDoctor = (event) => {
+    setSelectedDoctor(event.target.value);
+  };
+
   React.useEffect(() => {
-    getPolyclinicsAndDoctors();
+    getPolyclinics();
   }, []);
 
   React.useEffect(() => {
-    const setDoctorsSelect = () => {
-      if (selectedPolyclinic !== '') {
-        var d = [];
-
-        for (var i = 0; i < polyclinicsAndDoctors.length; i++) {
-          if (polyclinicsAndDoctors[i].polyclinic === selectedPolyclinic) {
-            let ds = polyclinicsAndDoctors[i].doctors;
-            for (var j = 0; j < ds.length; j++) {
-              d.push(ds[j].name);
+    const getDoctorsOfPolyclinic = () => {
+      socket
+        .sendRequest('GET_DOCTORS_OF_POLYCLINIC',{polyclinicId: selectedPolyclinic.id})
+        .then(async (data) => {
+          if (data) {
+            setDoctors(data.doctors);
+            if(selectedPolyclinic !== ""){
+              setDoctorsSelectIsDisabled(false);
             }
           }
-        }
-        setDoctors(d);
-        setDoctorsSelectIsDisabled(false);
-      }
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
     };
-    setDoctorsSelect();
-  }, [selectedPolyclinic, polyclinicsAndDoctors]);
+    getDoctorsOfPolyclinic();
+  }, [selectedPolyclinic]);
 
   const searchAppointments = () => {
+    let a =dayjs(appointmentDate);
+    let b=a.add(3,"hour");
+    let c =new Date(b);
+    let appointmentInfo = {
+      polyclinicId: selectedPolyclinic.id,
+      doctorId: selectedDoctor.id,
+      appointmentDate: c,
+    }
     socket
-      .sendRequest('SEARCH_APPOINTMENTS', {
-        polyclinicName: selectedPolyclinic,
-        doctorName: selectedDoctor,
-        date: appointmentDate,
-      })
+      .sendRequest('SEARCH_APPOINTMENTS', appointmentInfo)
       .then(async (data) => {
         if (data) {
+          console.log(data);
           setAppointments(data.appointmentsTime);
+          setHoursIsDisabled(true);
         }
       })
       .catch((err) => {
         console.error(err.message);
       });
   };
+
   const saveAppointment = (hour) => {
-    let userId = localStorage.getItem('id');
+    let patientId = localStorage.getItem('id');
     socket
       .sendRequest('SAVE_APPOINTMENT ', {
-        userId: userId,
+        patientId: patientId,
         polyclinicName: selectedPolyclinic,
         doctorName: selectedDoctor,
         date: appointmentDate,
@@ -118,25 +131,53 @@ const MakeAppointmentDashboard = () => {
             }}
           >
             <Typography variant="h6">Randevu Ara</Typography>
-            <BasicSelect
-              label="Klinik Seçiniz"
-              value={selectedPolyclinic}
-              setValue={setSelectedPolyclinic}
-              items={polyclinics}
-            />
-            <BasicSelect
-              label="Doktor Seçiniz"
-              value={selectedDoctor}
-              setValue={setSelectedDoctor}
-              items={doctors}
-              isDisabled={doctorsSelectIsDisabled}
-            />
+            <Box sx={{ minWidth: 120, width: '100%' }}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="demo-simple-select-label">Klinik Seçiniz</InputLabel>
+                <Select
+                  defaultValue=""
+                  value={selectedPolyclinic}
+                  label="Klinik Seçiniz"
+                  onChange={handleChange}
+                >
+                  {polyclinics.map((name, index) => {
+                    return (
+                      <MenuItem value={name} key={index}>
+                        {name.polyclinicName}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ minWidth: 120, width: '100%' }}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="demo-simple-select-label">Doktor Seçiniz</InputLabel>
+                <Select
+                  defaultValue=""
+                  value={selectedDoctor}
+                  label="Doktor Seçiniz"
+                  disabled={doctorsSelectIsDisabled}
+                  onChange={handleChangeDoctor}
+                >
+                  {doctors.map((name, index) => {
+                    return (
+                      <MenuItem value={name} key={index}>
+                        {name.doctor}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Randevu Tarihi Seçiniz"
                 format="DD/MM/YYYY"
                 value={appointmentDate}
-                onChange={(value) => setAppointmentDate(value)}
+                minDate={dayjs()}
+                onChange={(value) => 
+                  setAppointmentDate(value)}
                 required
                 sx={{ width: '100%', marginTop: 2 }}
               />
@@ -168,12 +209,12 @@ const MakeAppointmentDashboard = () => {
             }}
           >
             <Typography variant="h6">Randevu Saatleri</Typography>
-            <Grid container spacing={2}>
-              {appointments.map((appointment, index) => (
+            {hoursIsDisabled ? <Grid container spacing={2}>
+              {hours.map((hour, index) => (
                 <Grid item xs={3} key={index}>
                   <Button
                     onClick={() => {
-                      saveAppointment(appointment.hour);
+                      // saveAppointment(appointment.hour);
                     }}
                     fullWidth
                     variant="contained"
@@ -189,13 +230,13 @@ const MakeAppointmentDashboard = () => {
                         color: 'white',
                       },
                     }}
-                    disabled={appointment.isAvailable}
+                    disabled={appointments.includes(hour) ? true : false}
                   >
-                    {appointment.hour}
+                    {hour}
                   </Button>
                 </Grid>
               ))}
-            </Grid>
+            </Grid> : <Grid item xs={3}></Grid>}
           </Paper>
         </Grid>
       </Grid>

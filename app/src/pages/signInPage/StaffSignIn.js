@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -7,19 +6,27 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import PasswordInput from '../../components/PasswordInput';
 import Input from '../../components/Input';
-import { Link } from 'react-router-dom';
 import { socket } from '../../services/socketServices';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+
 const StaffSignIn = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    if (username === '' || password === '') {
+      enqueueSnackbar({
+        message: 'Kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+      return;
+    }
     let userInfo = {
       username: username,
       password: password,
@@ -33,7 +40,10 @@ const StaffSignIn = () => {
           await login({ role: 'staff' });
           navigate('/', { replace: true });
         } else {
-          alert('Kullanıcı adı veya parola hatalı.');
+          enqueueSnackbar({
+            message: 'Kullanıcı adı veya şifre hatalı.',
+            variant: 'error',
+          });
         }
       })
       .catch((err) => {
@@ -82,13 +92,6 @@ const StaffSignIn = () => {
         >
           Giriş Yap
         </Button>
-        <Grid container>
-          <Grid item xs>
-            <Link href="#" variant="body2">
-              Şifremi Unuttum
-            </Link>
-          </Grid>
-        </Grid>
       </Box>
     </Box>
   );

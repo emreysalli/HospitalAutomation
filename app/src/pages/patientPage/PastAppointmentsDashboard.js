@@ -7,37 +7,12 @@ import { Divider } from '@mui/material';
 import { socket } from '../../services/socketServices';
 
 const PastAppointmentsDashboard = () => {
-  const [userAppointments, setUserAppointments] = React.useState([
-    {
-      id: 1,
-      polyclinic: 'Dahiliye',
-      date: '12.09.2022',
-      hour: '08:30',
-      doctor: 'emre yasin şallı',
-      appointmentStatus: 1,
-    },
-    {
-      id: 2,
-      polyclinic: 'Dahiliye',
-      date: '12.09.2022',
-      hour: '08:30',
-      doctor: 'emre yasin şallı',
-      appointmentStatus: 0,
-    },
-    {
-      id: 3,
-      polyclinic: 'Dahiliye',
-      date: '12.09.2022',
-      hour: '08:30',
-      doctor: 'emre yasin şallı',
-      appointmentStatus: 1,
-    },
-  ]);
+  const [userAppointments, setUserAppointments] = React.useState([]);
 
   const getPatientPastAppointments = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_ PATIENT_PAST_APPOINTMENTS', { id: userId })
+      .sendRequest('GET_PATIENT_PAST_APPOINTMENTS', { patientId: userId })
       .then(async (data) => {
         if (data) {
           setUserAppointments(data.appointments);
@@ -88,12 +63,12 @@ const PastAppointmentsDashboard = () => {
                     width: 'auto',
                   }}
                 >
-                  {appointment.date} {appointment.hour}
+                  {appointment.appointmentDate} {appointment.appointmentHour}
                 </Paper>
               </Grid>
               <Grid item xs={6} md={3} sx={{ display: 'flex' }}>
                 <i className="fa-solid fa-tag fa-rotate-90" />
-                {appointment.appointmentStatus === 1 ? (
+                {appointment.appointmentStatus === 0 ? (
                   <Typography
                     sx={{ color: 'green', fontWeight: 'bold' }}
                     ml={2}
@@ -108,7 +83,7 @@ const PastAppointmentsDashboard = () => {
               </Grid>
               <Grid item xs={6} md={3}>
                 <i className="fa-regular fa-hospital" />{' '}
-                {appointment.polyclinic}
+                {appointment.polyclinicName}
               </Grid>
               <Grid item xs={6} md={3}>
                 <i className="fa-solid fa-stethoscope"></i> {appointment.doctor}

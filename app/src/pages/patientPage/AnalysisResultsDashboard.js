@@ -6,39 +6,21 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
 import { socket } from '../../services/socketServices';
-
+// {
+//   id: 1,
+//   date: '16.03.2023',
+//   transactionName: 'GLUKOZ',
+//   result: '104',
+//   resultUnit: 'mg/dL',
+//   referenceValue: '74 - 106',
+// }
 const AnalysisResultsDashboard = () => {
-  const [analysisResults, setAnalysisResults] = React.useState([
-    {
-      id: 1,
-      date: '16.03.2023',
-      transactionName: 'GLUKOZ',
-      result: '104',
-      resultUnit: 'mg/dL',
-      referenceValue: '74 - 106',
-    },
-    {
-      id: 2,
-      date: '16.03.2023',
-      transactionName: 'KREATİNİN',
-      result: '0.66',
-      resultUnit: 'mg/dL',
-      referenceValue: '0.50 - 0.90',
-    },
-    {
-      id: 3,
-      date: '16.03.2023',
-      transactionName: 'KOLESTEROL',
-      result: '229',
-      resultUnit: 'mg/dL',
-      referenceValue: '0 - 200',
-    },
-  ]);
+  const [analysisResults, setAnalysisResults] = React.useState([]);
 
   const getPatientAnalysisResults = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_ PATIENT_ANALYSIS_RESULTS', { id: userId })
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { id: userId })
       .then(async (data) => {
         if (data) {
           setAnalysisResults(data.analysisResults);

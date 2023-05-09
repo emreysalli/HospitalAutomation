@@ -15,6 +15,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+
 const PatientSignUp = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -28,26 +30,56 @@ const PatientSignUp = () => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [repassword, setRepassword] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      birthplace === '' ||
+      birthdate === '' ||
+      phoneNumber === '' ||
+      email === '' ||
+      username === '' ||
+      password === ''
+    ) {
+      enqueueSnackbar({
+        message:
+          'Ad, soyad, T.C. kimlik no, doğum yeri, doğum tarihi, telefon numarası, e-mail, kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+      return;
+    }
+    if (password !== repassword) {
+      enqueueSnackbar({
+        message: 'Şifre ve tekrar şifre aynı değil.',
+        variant: 'error',
+      });
+      return;
+    }
     try {
       let newPatientInfo = {
         name: name,
         surname: surname,
         tcnumber: tcnumber,
-        birthplace: birthplace,
-        birthdate: birthdate,
+        birthPlace: birthplace,
+        birthDate: birthdate,
         phoneNumber: phoneNumber,
         email: email,
         username: username,
         password: password,
       };
       await socket
-        .sendRequest('PATIENT_SIGNUP', newPatientInfo)
+        .sendRequest('ADD_PATIENT', newPatientInfo)
         .then(async (data) => {
           await login({ role: 'patient', id: data?.id });
           navigate('/', { replace: true });
+          enqueueSnackbar({
+            message: 'Kayıt başarıyla oluşturuldu.',
+            variant: 'success',
+          });
         })
         .catch((err) => {
           console.error(err.message);

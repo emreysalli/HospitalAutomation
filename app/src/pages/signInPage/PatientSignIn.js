@@ -11,15 +11,23 @@ import { Link } from 'react-router-dom';
 import { socket } from '../../services/socketServices';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+
 const PatientSignIn = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-
+  const { enqueueSnackbar } = useSnackbar();
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    if (username === '' || password === '') {
+      enqueueSnackbar({
+        message: 'Kullanıcı adı ve şifre giriniz.',
+        variant: 'error',
+      });
+      return;
+    }
     let userInfo = {
       username: username,
       password: password,
@@ -32,7 +40,10 @@ const PatientSignIn = () => {
           await login({ role: 'patient', id: data?.id });
           navigate('/', { replace: true });
         } else {
-          alert('Kullanıcı adı veya parola hatalı.');
+          enqueueSnackbar({
+            message: 'Kullanıcı adı veya şifre hatalı.',
+            variant: 'error',
+          });
         }
       })
       .catch((err) => {
@@ -81,11 +92,7 @@ const PatientSignIn = () => {
           Giriş Yap
         </Button>
         <Grid container>
-          <Grid item xs>
-            <Link href="#" variant="body2">
-              Şifremi Unuttum
-            </Link>
-          </Grid>
+          <Grid item xs></Grid>
           <Grid item>
             <Link to="../patientsignup" variant="body2">
               Hesabınız yok mu? Üye Ol

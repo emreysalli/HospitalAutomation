@@ -89,10 +89,25 @@ const PrescriptionsDashboard = () => {
   const getPatientPrescriptions = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_ PATIENT_PRESCRIPTIONS', { id: userId })
+      .sendRequest('GET_PATIENT_PRESCRIPTIONS', { id: userId })
       .then(async (data) => {
         if (data) {
           setPrescriptions(data.prescriptions);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  const getPatientMedicines = (prescriptionId) => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('GET_PATIENT_MEDICINES', { id: userId, prescriptionId: prescriptionId})
+      .then(async (data) => {
+        if (data) {
+          console.log(data.prescriptions);
+          setShowDialog(data.prescriptions);
         }
       })
       .catch((err) => {
@@ -242,7 +257,8 @@ const PrescriptionsDashboard = () => {
               <Grid item xs={6} md={3}>
                 <Button
                   onClick={() => {
-                    setShowDialog(prescription.medicines);
+                    getPatientMedicines(prescription.id);
+                    
                   }}
                   variant="contained"
                   sx={{ borderRadius: '50px' }}
