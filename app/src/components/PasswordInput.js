@@ -6,7 +6,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-const PasswordInput = ({ label, value, setValue }) => {
+const PasswordInput = ({ label, value, setValue,id }) => {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -23,12 +23,12 @@ const PasswordInput = ({ label, value, setValue }) => {
       required
       fullWidth
       variant="outlined"
-      id="password"
+      id={id ? id : "password"}
       name="password"
     >
       <InputLabel htmlFor="outlined-adornment-password">{label}</InputLabel>
       <OutlinedInput
-        id="password"
+        id={id ? id : "password"}
         name="password"
         value={value}
         onChange={handleChange}

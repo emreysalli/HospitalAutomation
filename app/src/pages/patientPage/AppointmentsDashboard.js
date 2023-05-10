@@ -6,9 +6,11 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Divider } from '@mui/material';
 import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 
 const AppointmentsDashboard = () => {
   const [userAppointments, setUserAppointments] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const getPatientAppointments = () => {
     let userId = localStorage.getItem('id');
@@ -33,11 +35,18 @@ const AppointmentsDashboard = () => {
       })
       .then(async (data) => {
         if (data) {
-          alert('Randevu iptal edildi.');
+          enqueueSnackbar({
+            message: 'Randevu iptal edildi.',
+            variant: 'success',
+          });
           getPatientAppointments();
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Randevu iptal edilemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };

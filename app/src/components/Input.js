@@ -10,6 +10,7 @@ const Input = ({
   type,
   margin,
   isDisabled,
+  maxLength
 }) => {
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -28,6 +29,7 @@ const Input = ({
       label={label}
       name={id}
       rows={3}
+      inputProps={{ maxLength: maxLength }}
     />
   );
 };

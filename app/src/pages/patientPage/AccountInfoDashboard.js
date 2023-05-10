@@ -9,8 +9,11 @@ import Input from './../../components/Input';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 import PasswordInput from '../../components/PasswordInput';
 import { socket } from '../../services/socketServices';
+import BasicSelect from './../../components/BasicSelect';
+import { useSnackbar } from 'notistack';
 
 const AccountInfoDashboard = () => {
   const [name, setName] = React.useState('');
@@ -25,6 +28,9 @@ const AccountInfoDashboard = () => {
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const genders = ['e', 'k'];
+  const bloodGroups = ['A+', 'A-', 'B+', 'B-', '0+', '0-', 'AB+', 'AB-'];
+  const { enqueueSnackbar } = useSnackbar();
 
   const getPatientInfo = () => {
     let userId = localStorage.getItem('id');
@@ -37,11 +43,11 @@ const AccountInfoDashboard = () => {
           setTcNumber(data.patientInfo.tcnumber);
           setGender(data.patientInfo.gender);
           setBloodGroup(data.patientInfo.bloodGroup);
-          setBirthplace(data.patientInfo.birthplace);
-          setBirthdate(data.patientInfo.birthdate);
+          setBirthplace(data.patientInfo.birthPlace);
+          setBirthdate(data.patientInfo.birthDate);
           setPhoneNumber(data.patientInfo.phoneNumber);
           setAddress(data.patientInfo.address);
-          setEmail(data.patientInfo.email);
+          // setEmail(data.patientInfo?.email);
           setUsername(data.patientInfo.username);
           setPassword(data.patientInfo.password);
         }
@@ -54,15 +60,24 @@ const AccountInfoDashboard = () => {
   const updatePatient = async () => {
     try {
       let userId = localStorage.getItem('id');
+      let dat = new Date(birthdate);
+      const yyyy = dat.getFullYear();
+      let mm = dat.getMonth() + 1; 
+      let dd = dat.getDate();
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+
+      const formattedToday =yyyy+ '-' + mm + '-' + dd;
       let newPatientInfo = {
-        id: parseInt(userId),
+        id: userId,
         name: name,
         surname: surname,
         tcnumber: tcnumber,
         gender: gender,
         bloodGroup: bloodGroup,
-        birthplace: birthplace,
-        birthdate: birthdate,
+        birthPlace: birthplace,
+        birthDate: formattedToday,
         phoneNumber: phoneNumber,
         address: address,
         email: email,
@@ -73,10 +88,17 @@ const AccountInfoDashboard = () => {
         .sendRequest('UPDATE_PATIENT', newPatientInfo)
         .then((data) => {
           if (data) {
-            alert('Bilgiler güncellendi.');
+            enqueueSnackbar({
+              message: 'Bilgiler güncellendi.',
+              variant: 'success',
+            });
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Bilgiler güncellenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -110,6 +132,7 @@ const AccountInfoDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Stack direction="row" spacing={2} mt={1}>
               <Input
@@ -128,19 +151,26 @@ const AccountInfoDashboard = () => {
                 setValue={setSurname}
               />
             </Stack>
-            <Input
-              id="gender"
-              label="Cinsiyet"
-              isRequired={true}
-              value={gender}
-              setValue={setGender}
-            />
+            <Stack direction="row" spacing={2}>
+              <BasicSelect
+                label="Cinsiyet"
+                value={gender}
+                setValue={setGender}
+                items={genders}
+              />
+              <BasicSelect
+                label="Kan Grubu"
+                value={bloodGroup}
+                setValue={setBloodGroup}
+                items={bloodGroups}
+              />
+            </Stack>
             <Stack direction="row" spacing={2} mt={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Doğum Tarihi"
                   format="DD/MM/YYYY"
-                  value={birthdate}
+                  value={dayjs(birthdate)}
                   onChange={(value) => setBirthdate(value)}
                   required
                   sx={{ width: '100%' }}
@@ -181,6 +211,7 @@ const AccountInfoDashboard = () => {
               isRequired={true}
               value={phoneNumber}
               setValue={setPhoneNumber}
+              maxLength={11}
             />
             <Input
               id="email"
