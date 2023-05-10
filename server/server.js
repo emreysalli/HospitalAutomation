@@ -168,7 +168,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('UPDATE_DOCTOR', (data, callback) => {
-        var updateQuery = "UPDATE doctors SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "',polyclinic = '" + data.polyclinic + "' WHERE id = '" + data.id + "'"
+        var updateQuery = "UPDATE doctors SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
@@ -489,6 +489,7 @@ io.on('connection', (socket) => {
                         "name": result[0].name,
                         "surname": result[0].surname,
                         "tcnumber": result[0].tcnumber,
+                        "address": result[0].address,
                         "bloodGroup": result[0].bloodGroup,
                         "gender": result[0].gender,
                         "birthPlace": result[0].birthPlace,
@@ -641,8 +642,6 @@ io.on('connection', (socket) => {
         })
     });
 
-    //BITMEDI SELECT p.id,p.polyclinicName from polyclinics as p WHERE p.id IN (SELECT d.polyclinicId from doctors as d);
-
     socket.on('SAVE_APPOINTMENT', (data, callback) => {
         var insertQuery = "INSERT INTO appointments (polyclinicName, doctorId, patientId, appointmentDate, appointmentHour) VALUES ('" + data.polyclinicName + "', '" + data.doctorId + "','" + data.patientId + "','" + data.appointmentDate + "','" + data.appointmentHour + "')"
 
@@ -654,6 +653,97 @@ io.on('connection', (socket) => {
             }
             callback({
                 data: "ok"
+            });
+        })
+    });
+
+    ////
+    socket.on('DOCTOR_LOGIN', (data, callback) => {
+        var authQuery = "SELECT EXISTS(SELECT 1 FROM doctors WHERE username = '" + data.username + "' AND password = '" + data.password + "') AS present"
+        conn.query(authQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            if (result[0].present == 1) {
+                var idQuery = "SELECT id from doctors WHERE username = '" + data.username + "'"
+                conn.query(idQuery, function(err, result) {
+                    if (err) {
+                        callback({
+                            error: err
+                        });
+                    }
+                    callback({
+                        data: {
+                            userPresent: true,
+                            id: result[0].id
+                        }
+                    });
+                })
+            } else {
+                callback({
+                    data: {
+                        userPresent: false
+                    }
+                });
+            }
+        })
+    });
+
+    socket.on('GET_DOCTOR_INFO', (data, callback) => {
+        var selectQuery = "SELECT * from doctors WHERE id = '" + data.id + "'"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            console.log(result)
+            callback({
+                data: {
+                    "doctorInfo": {
+                        "name": result[0].name,
+                        "surname": result[0].surname,
+                        "tcnumber": result[0].tcnumber,
+                        "polyclinic": result[0].polyclinic,
+                        "username": result[0].username,
+                        "password": result[0].password
+                    }
+                }
+            });
+        })
+    });
+
+    socket.on('GET_DOCTOR_APPOINTMENTS', (data, callback) => {
+        console.log(data);
+        var selectQuery = "SELECT a.id, DATE_FORMAT(a.appointmentDate,'%d-%m-%Y') as appointmentDate, a.appointmentHour, CONCAT(p.name,' ',p.surname) as patient, p.tcnumber, p.id as patientId from appointments as a INNER JOIN patients as p ON p.id = a.patientId WHERE a.doctorId = '"+ data.id +"' AND a.appointmentDate = '"+data.appointmentDate +"' "
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    appointments: result
+                }
+            });
+        })
+    });
+
+    socket.on('DOCTOR_ANALYSIS_RESULTS', (data, callback) => {
+        var selectQuery = "SELECT a.id, DATE_FORMAT(a.date,'%d-%m-%Y') as date, a.transactionName, a.result, a.resultUnit, a.referenceValue, a.patientId FROM analysisResults as a INNER JOIN patients as p on p.tcnumber = '"+ data.tcnumber +"'"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    analysisResults: result
+                }
             });
         })
     });
