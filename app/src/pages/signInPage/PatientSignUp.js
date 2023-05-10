@@ -16,6 +16,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import BasicSelect from './../../components/BasicSelect';
 
 const PatientSignUp = () => {
   const { login } = useContext(AuthContext);
@@ -26,10 +27,14 @@ const PatientSignUp = () => {
   const [birthplace, setBirthplace] = React.useState('');
   const [birthdate, setBirthdate] = React.useState('');
   const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [bloodGroup, setBloodGroup] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [repassword, setRepassword] = React.useState('');
+  const genders = ['e', 'k'];
+  const bloodGroups = ['A+', 'A-', 'B+', 'B-', '0+', '0-', 'AB+', 'AB-'];
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = async (event) => {
@@ -41,6 +46,8 @@ const PatientSignUp = () => {
       birthplace === '' ||
       birthdate === '' ||
       phoneNumber === '' ||
+      gender === '' ||
+      bloodGroup === '' ||
       email === '' ||
       username === '' ||
       password === ''
@@ -60,22 +67,32 @@ const PatientSignUp = () => {
       return;
     }
     try {
+      let dat = new Date(birthdate);
+      const yyyy = dat.getFullYear();
+      let mm = dat.getMonth() + 1; 
+      let dd = dat.getDate();
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+
+      const formattedToday =yyyy+ '-' + mm + '-' + dd;
       let newPatientInfo = {
         name: name,
         surname: surname,
         tcnumber: tcnumber,
         birthPlace: birthplace,
-        birthDate: birthdate,
+        birthDate: formattedToday,
+        gender: gender,
+        bloodGroup: bloodGroup,
         phoneNumber: phoneNumber,
-        email: email,
         username: username,
         password: password,
       };
       await socket
         .sendRequest('ADD_PATIENT', newPatientInfo)
         .then(async (data) => {
-          await login({ role: 'patient', id: data?.id });
-          navigate('/', { replace: true });
+          
+          navigate('../patient', { replace: true });
           enqueueSnackbar({
             message: 'Kayıt başarıyla oluşturuldu.',
             variant: 'success',
@@ -130,6 +147,7 @@ const PatientSignUp = () => {
           isRequired={true}
           value={tcnumber}
           setValue={setTcNumber}
+          maxLength={11}
         />
         <Input
           id="email"
@@ -151,7 +169,22 @@ const PatientSignUp = () => {
           isRequired={true}
           value={phoneNumber}
           setValue={setPhoneNumber}
+          maxLength={11}
         />
+        <Stack direction="row" spacing={2}>
+              <BasicSelect
+                label="Cinsiyet"
+                value={gender}
+                setValue={setGender}
+                items={genders}
+              />
+              <BasicSelect
+                label="Kan Grubu"
+                value={bloodGroup}
+                setValue={setBloodGroup}
+                items={bloodGroups}
+              />
+            </Stack>
         <Stack direction="row" spacing={2} mt={1}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
@@ -171,10 +204,12 @@ const PatientSignUp = () => {
             setValue={setBirthplace}
           />
         </Stack>
+        
 
         <PasswordInput label="Şifre" value={password} setValue={setPassword} />
 
         <PasswordInput
+        id="rePassword"
           label="Şifre Tekrar"
           value={repassword}
           setValue={setRepassword}
