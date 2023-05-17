@@ -31,7 +31,6 @@ import AnalysisResultsDashboard from './pages/patientPage/AnalysisResultsDashboa
 import PrescriptionsDashboard from './pages/patientPage/PrescriptionsDashboard';
 import DoctorAccountInfoDashboard from './pages/doctorPage/DoctorAccountInfoDashboard';
 import DoctorAppointmentsDashboard from './pages/doctorPage/DoctorAppointmentsDashboard';
-import PaitingWaitingDashboard from './pages/doctorPage/PaitingWaitingDashboard';
 import PatientExaminationDashboard from './pages/doctorPage/PatientExaminationDashboard';
 import PatientAnalysisResultDashboard from './pages/doctorPage/PatientAnalysisResultDashboard';
 import StaffSignIn from './pages/signInPage/StaffSignIn';
@@ -42,7 +41,7 @@ import LTPatientAnalysisResultDashboard from './pages/labTechnicianPage/LTPatien
 import StaffHomePage from './pages/staffPage/StaffHomePage';
 import StaffAccountInfoDashboard from './pages/staffPage/StaffAccountInfoDashboard';
 import PatientAdmissionPage from './pages/staffPage/PatientAdmissionPage';
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import { SnackbarProvider } from 'notistack';
 const theme = createTheme({
   palette: {
     background: {
@@ -141,10 +140,6 @@ const App = () => {
                       <Route
                         path="appointments"
                         element={<DoctorAppointmentsDashboard />}
-                      />
-                      <Route
-                        path="patient-waiting"
-                        element={<PaitingWaitingDashboard />}
                       />
                       <Route
                         path="patient-examination"

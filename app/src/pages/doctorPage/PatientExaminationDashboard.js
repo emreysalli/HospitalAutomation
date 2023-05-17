@@ -5,6 +5,10 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import { Divider } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -13,50 +17,10 @@ import Input from '../../components/Input';
 import { socket } from '../../services/socketServices';
 import BasicSelect from './../../components/BasicSelect';
 import dayjs from 'dayjs';
-const diagnosticStatements = ['Baş Ağrısı', 'Akut Sinüzit', 'Astım', 'Anemi'];
-const diagnosisTypes = [
-  'Ön Tanı',
-  'Ek Tanı',
-  'Ana Tanı',
-  'Sevk Tanı',
-  'Rapor Tanı',
-];
+import { useSnackbar } from 'notistack';
+import { diagnosticStatements, diagnosisTypes, tests, medicines, doses, usagePatterns, periods, usageNumbers, boxQuantities } from './../../data/doctorInspectionData';
 
-const tests = [
-  'Alerji Testi',
-  'Biyokimya Testi',
-  'Genetik Testi',
-  'Hematoloji Testi',
-  'Hormon Testi',
-  'İdrar Testi',
-  'İmmünoloji Testi',
-  'Kan Testi',
-];
 
-const medicines = [
-  'ABSTRAL 800 MCG 10 DILALTI TABLET',
-  'ACCUZIDE 20 MG/12,5 MG 30 FILM TABLET',
-  'AdCUZIDE 20 MG/12,5 MG 30 FILM TABLET',
-  'AfCUZIDE 20 MG/12,5 MG 30 FILM TABLET',
-  'AgfCUZIDE 20 MG/12,5 MG 30 FILM TABLET',
-  'LEUCOVORIN-TEVA 50 MG 1 FLAKON',
-  'OPRAKS FORT 550 MG 10 FILM TABLET',
-];
-const doses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const usagePatterns = [
-  'Ağızdan',
-  'Cilt Üzerine',
-  'Solunum Yolu',
-  'Ağız içi',
-  'Burun içi',
-  'Dil altı',
-  'Dış kulak yolu',
-  'Göz üzerine',
-  'İntra müsküler',
-];
-const periods = ['Gün', 'Hafta', 'Ay', 'Yıl'];
-const usageNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const boxQuantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const PatientExaminationDashboard = () => {
   const [selectedMedicine, setSelectedMedicine] = React.useState('');
@@ -78,6 +42,7 @@ const PatientExaminationDashboard = () => {
   const [gender, setGender] = React.useState('');
   const [bloodGroup, setBloodGroup] = React.useState('');
   const [birthdate, setBirthdate] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const getPatientInfoWithTC = () => {
     socket
@@ -120,7 +85,6 @@ const PatientExaminationDashboard = () => {
     if (mm < 10) mm = '0' + mm;
 
     let formattedToday = yyyy + '-' + mm + '-' + dd;
-    console.log();
     let data1 = {
       date: formattedToday,
       prescriptionNo: generateString(5),
@@ -148,10 +112,17 @@ const PatientExaminationDashboard = () => {
       .sendRequest('ADD_MEDICINES', data2)
       .then(async (data) => {
         if (data) {
-          console.log(data);
+          enqueueSnackbar({
+            message: 'Reçete gönderildi.',
+            variant: 'success',
+          });
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Reçete gönderilemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
@@ -167,10 +138,43 @@ const PatientExaminationDashboard = () => {
       .sendRequest('ADD_DIAGNOSIS', data)
       .then(async (data) => {
         if (data) {
-          console.log(data);
+          enqueueSnackbar({
+            message: 'Tanılar gönderildi.',
+            variant: 'success',
+          });
         }
       })
       .catch((err) => {
+        enqueueSnackbar({
+          message: 'Tanılar gönderilemedi.',
+          variant: 'errror',
+        });
+        console.error(err.message);
+      });
+  };
+
+  const sendPatientTests = () => {
+    let doctorId = localStorage.getItem('id');
+    let data = {
+      analysisResults: patientTests,
+      doctorId: doctorId,
+      patientId: patientId,
+    };
+    socket
+      .sendRequest('ADD_ANALYSIS_RESULT', data)
+      .then(async (data) => {
+        if (data) {
+          enqueueSnackbar({
+            message: 'Testler gönderildi.',
+            variant: 'success',
+          });
+        }
+      })
+      .catch((err) => {
+        enqueueSnackbar({
+          message: 'Testler gönderilemedi.',
+          variant: 'error',
+        });
         console.error(err.message);
       });
   };
@@ -183,7 +187,14 @@ const PatientExaminationDashboard = () => {
   };
 
   const addMedicineToPrescription = () => {
-    if(selectedMedicine==="" && selectedDose==="" && selectedPeriod==="" && selectedUsage==="" && selectedNumberOfUses==="" && selectedTotalBox===""){
+    if (
+      selectedMedicine === '' &&
+      selectedDose === '' &&
+      selectedPeriod === '' &&
+      selectedUsage === '' &&
+      selectedNumberOfUses === '' &&
+      selectedTotalBox === ''
+    ) {
       return;
     }
     let m = {
@@ -209,7 +220,7 @@ const PatientExaminationDashboard = () => {
   };
 
   const addDiagnosis = () => {
-    if(selectedExplanation==="" && selectedType===""){
+    if (selectedExplanation === '' && selectedType === '') {
       return;
     }
     let d = {
@@ -228,12 +239,22 @@ const PatientExaminationDashboard = () => {
   };
 
   const addTest = () => {
-    if(selectedTest===""){
+    if (selectedTest === '') {
       return;
     }
+    const yyyy = new Date().getFullYear();
+    let mm = new Date().getMonth() + 1;
+    let dd = new Date().getDate();
+
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
+
+    let formattedToday = yyyy + '-' + mm + '-' + dd;
+
     let t = {
+      ...selectedTest,
+      date: formattedToday,
       id: randomNumberInRange(),
-      name: selectedTest,
     };
     setPatientTests([...patientTests, t]);
     setSelectedTest('');
@@ -242,7 +263,17 @@ const PatientExaminationDashboard = () => {
   const removeTest = (id) => {
     setPatientTests((prev) => prev.filter((el) => el.id !== id));
   };
-
+  const handleChangeTest = (event) => {
+    setSelectedTest(event.target.value);
+  };
+  React.useEffect(() => {
+    if (patientId === '') {
+      enqueueSnackbar({
+        message: 'Hasta T.C. Kimlik No giriniz.',
+        variant: 'info',
+      });
+    }
+  }, [patientId]);
   return (
     <Box
       sx={{
@@ -350,6 +381,7 @@ const PatientExaminationDashboard = () => {
                             setPatientDiagnoses([]);
                           }}
                           variant="contained"
+                          disabled={patientId === '' ? true : false}
                         >
                           Temizle
                         </Button>
@@ -359,6 +391,7 @@ const PatientExaminationDashboard = () => {
                             sendPatientDiagnoses();
                           }}
                           variant="contained"
+                          disabled={patientId === '' ? true : false}
                         >
                           Gönder
                         </Button>
@@ -415,14 +448,16 @@ const PatientExaminationDashboard = () => {
                         value={selectedExplanation}
                         setValue={setSelectedExplanation}
                         items={diagnosticStatements}
-                        w='40%'
+                        isDisabled={patientId === '' ? true : false}
+                        w="40%"
                       />
                       <BasicSelect
                         label="Tanı Türü"
                         value={selectedType}
                         setValue={setSelectedType}
                         items={diagnosisTypes}
-                        w='40%'
+                        isDisabled={patientId === '' ? true : false}
+                        w="40%"
                       />
                       <Button
                         mt={20}
@@ -436,6 +471,7 @@ const PatientExaminationDashboard = () => {
                           addDiagnosis();
                         }}
                         variant="contained"
+                        disabled={patientId === '' ? true : false}
                       >
                         Ekle
                       </Button>
@@ -465,16 +501,20 @@ const PatientExaminationDashboard = () => {
                             setPatientTests([]);
                           }}
                           variant="contained"
+                          disabled={patientId === '' ? true : false}
                         >
                           Temizle
                         </Button>
-                      <Button
-                        sx={{ height: '30px', width: '200px' }}
-                        onClick={() => {}}
-                        variant="contained"
-                      >
-                        Gönder
-                      </Button>
+                        <Button
+                          sx={{ height: '30px', width: '200px' }}
+                          onClick={() => {
+                            sendPatientTests();
+                          }}
+                          variant="contained"
+                          disabled={patientId === '' ? true : false}
+                        >
+                          Gönder
+                        </Button>
                       </Stack>
                     </Stack>
                     <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
@@ -495,7 +535,7 @@ const PatientExaminationDashboard = () => {
                       >
                         <Grid container spacing={2} my={1}>
                           <Grid item xs={10}>
-                            {test.name}
+                            {test.transactionName}
                           </Grid>
                           <Grid item xs={2}>
                             <Button
@@ -517,13 +557,28 @@ const PatientExaminationDashboard = () => {
                       alignItems="center"
                       justifyContent="space-between"
                     >
-                      <BasicSelect
-                        label="Test"
-                        value={selectedTest}
-                        setValue={setSelectedTest}
-                        items={tests}
-                        w='40%'
-                      />
+                      <Box sx={{ minWidth: 120, width: '40%' }}>
+                        <FormControl fullWidth margin="normal">
+                          <InputLabel id="demo-simple-select-label">
+                            Test
+                          </InputLabel>
+                          <Select
+                            defaultValue=""
+                            value={selectedTest}
+                            label="Test"
+                            disabled={patientId === '' ? true : false}
+                            onChange={handleChangeTest}
+                          >
+                            {tests.map((test, index) => {
+                              return (
+                                <MenuItem value={test} key={index}>
+                                  {test.transactionName}
+                                </MenuItem>
+                              );
+                            })}
+                          </Select>
+                        </FormControl>
+                      </Box>
                       <Button
                         my={10}
                         mt={20}
@@ -537,6 +592,7 @@ const PatientExaminationDashboard = () => {
                           addTest();
                         }}
                         variant="contained"
+                        disabled={patientId === '' ? true : false}
                       >
                         Ekle
                       </Button>
@@ -568,6 +624,7 @@ const PatientExaminationDashboard = () => {
                         setPatientMedicines([]);
                       }}
                       variant="contained"
+                      disabled={patientId === '' ? true : false}
                     >
                       Temizle
                     </Button>
@@ -577,6 +634,7 @@ const PatientExaminationDashboard = () => {
                         sendPatientPrescriptionToServer();
                       }}
                       variant="contained"
+                      disabled={patientId === '' ? true : false}
                     >
                       Reçete Gönder
                     </Button>
@@ -658,44 +716,51 @@ const PatientExaminationDashboard = () => {
                     value={selectedMedicine}
                     setValue={setSelectedMedicine}
                     items={medicines}
-                    w='22%'
+                    isDisabled={patientId === '' ? true : false}
+                    w="22%"
                   />
                   <BasicSelect
                     label="Kullanım Şekli "
                     value={selectedUsage}
                     setValue={setSelectedUsage}
                     items={usagePatterns}
-                    w='20%'
+                    isDisabled={patientId === '' ? true : false}
+                    w="20%"
                   />
                   <BasicSelect
                     label="Doz "
                     value={selectedDose}
                     setValue={setSelectedDose}
                     items={doses}
-                    w='5%'
+                    isDisabled={patientId === '' ? true : false}
+                    w="5%"
                   />
                   <BasicSelect
                     label="Periyot "
                     value={selectedPeriod}
                     setValue={setSelectedPeriod}
                     items={periods}
-                    w='5%'
+                    isDisabled={patientId === '' ? true : false}
+                    w="5%"
                   />
                   <BasicSelect
                     label="Kullanım Sayısı "
                     value={selectedNumberOfUses}
                     setValue={setSelectedNumberOfUses}
                     items={usageNumbers}
-                    w='5%'
+                    isDisabled={patientId === '' ? true : false}
+                    w="5%"
                   />
                   <BasicSelect
                     label="Kutu Adedi "
                     value={selectedTotalBox}
                     setValue={setSelectedTotalBox}
                     items={boxQuantities}
-                    w='5%'
+                    isDisabled={patientId === '' ? true : false}
+                    w="5%"
                   />
                   <Button
+                    disabled={patientId === '' ? true : false}
                     sx={{ height: '50px', width: '80px' }}
                     onClick={() => {
                       addMedicineToPrescription();

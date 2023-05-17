@@ -15,11 +15,6 @@ export default function DoctorHomePage() {
       linkTo: 'appointments',
     },
     {
-      label: 'Bekleyen Hasta',
-      iconClassName: 'fa-solid fa-people-group',
-      linkTo: 'patient-waiting',
-    },
-    {
       label: 'Hasta Muayene',
       iconClassName: 'fa-solid fa-hospital-user',
       linkTo: 'patient-examination',

@@ -1,0 +1,213 @@
+export const diagnosticStatements = ['Baş Ağrısı', 'Akut Sinüzit', 'Astım', 'Anemi'];
+export const diagnosisTypes = [
+  'Ön Tanı',
+  'Ek Tanı',
+  'Ana Tanı',
+  'Sevk Tanı',
+  'Rapor Tanı',
+];
+
+export const tests = [
+  {
+    transactionName: 'Serbest T4',
+    result: '',
+    resultUnit: 'ng/dl',
+    referenceValue: '0,70-1,48',
+  },
+  {
+    transactionName: 'TSH',
+    result: '',
+    resultUnit: 'uIU/mL',
+    referenceValue: '0,35-4,94',
+  },
+  {
+    transactionName: 'C REAKTİF PROTEİN (CRP)',
+    result: '',
+    resultUnit: 'mg/L',
+    referenceValue: '0-5',
+  },
+  {
+    transactionName: 'Kreatinin (Serum/Plazma)',
+    result: '',
+    resultUnit: 'mg/dL',
+    referenceValue: '0.72-1.25',
+  },
+  {
+    transactionName: 'Üre (Serum/Plazma)',
+    result: '',
+    resultUnit: 'mg/dL',
+    referenceValue: '0-50',
+  },
+  {
+    transactionName: 'Vitamin B12',
+    result: '',
+    resultUnit: 'pg/ml',
+    referenceValue: '187-883',
+  },
+  {
+    transactionName: 'Demir (Serum/Plazma)',
+    result: '',
+    resultUnit: 'ug/dL',
+    referenceValue: '31-144',
+  },
+  {
+    transactionName: 'Ferritin (Serum/Plazma)',
+    result: '',
+    resultUnit: 'ng/mL',
+    referenceValue: '23.9-336.2',
+  },
+  {
+    transactionName: 'WBC',
+    result: '',
+    resultUnit: '10^3/uL',
+    referenceValue: '3.8-10',
+  },
+  {
+    transactionName: 'RDW-CV',
+    result: '',
+    resultUnit: '%',
+    referenceValue: '11.2-15',
+  },
+  {
+    transactionName: 'RBC',
+    result: '',
+    resultUnit: '10^6/uL',
+    referenceValue: '4.3-5.7',
+  },
+  {
+    transactionName: 'PLT',
+    result: '',
+    resultUnit: '10^3/uL',
+    referenceValue: '150-400',
+  },
+  {
+    transactionName: 'PDW',
+    result: '',
+    resultUnit: 'fL',
+    referenceValue: '9-20',
+  },
+  {
+    transactionName: 'NEU%',
+    result: '',
+    resultUnit: '%',
+    referenceValue: '45-78',
+  },
+  {
+    transactionName: 'NEU#',
+    result: '',
+    resultUnit: '10^3/uL',
+    referenceValue: '1.78-5.38',
+  },
+  {
+    transactionName: 'MPV',
+    result: '',
+    resultUnit: 'fL',
+    referenceValue: '7.8-13',
+  },
+  {
+    transactionName: 'MONO%',
+    result: '',
+    resultUnit: '%',
+    referenceValue: '3-12',
+  },
+  {
+    transactionName: 'MONO#',
+    result: '',
+    resultUnit: '10^3/uL',
+    referenceValue: '0.3-0.82',
+  },
+  {
+    transactionName: 'MCHC',
+    result: '',
+    resultUnit: 'g/L',
+    referenceValue: '310-370',
+  },
+  {
+    transactionName: 'MCH',
+    result: '',
+    resultUnit: 'pg',
+    referenceValue: '25-34',
+  },
+  {
+    transactionName: 'LYM%',
+    result: '',
+    resultUnit: '%',
+    referenceValue: '10-48',
+  },
+  {
+    transactionName: 'LYM#',
+    result: '',
+    resultUnit: '10^3/uL',
+    referenceValue: '1.32-3.57',
+  },
+  {
+    transactionName: 'HGB',
+    result: '',
+    resultUnit: 'g/L',
+    referenceValue: '132-173',
+  },
+  {
+    transactionName: 'HCT',
+    result: '',
+    resultUnit: '%',
+    referenceValue: '40-52',
+  },
+  {
+    transactionName: 'EOS%',
+    result: '',
+    resultUnit: '%',
+    referenceValue: '0.8-7',
+  },
+  {
+    transactionName: 'EOS#',
+    result: '',
+    resultUnit: '10^3/uL',
+    referenceValue: '0.04-0.54',
+  },
+];
+
+export const medicines = [
+  'Augmentin 625 Duo Tablet',
+  'Mesone 4mg Tablet',
+  'Ascoril LS Syrup',
+  'Allegra 120mg Tablet',
+  'Cefaone S 500mg/500mg Injection',
+  'Amoxyclav 625 Tablet',
+  'Azee 500 Tablet',
+  'Quinstat 0.5% Eye Drop',
+  'Cefpotus Clav 50mg/31.25mg Dry Syrup',
+  'Omey DM 10mg/20mg Capsule',
+  'Opox CV 50mg/31.25mg Dry Syrup',
+  'Relent Tablet',
+  'Levotiz Plus Syrup',
+  'Iridie-M Tablet',
+  'Gausebact 1000mg Injection',
+  'Flutrol 25 mcg/50 mcg Inhaler',
+  'Etorimust TH 60mg/4mg Tablet',
+  'Zivith 250 Tablet',
+  'Emfort P Syrup',
+  'Novam Tablet',
+  'Neomine 2.5mg Injection',
+  'Xilia-M 2 Tablet PR',
+  'Danzithro 100mg Dry Syrup',
+  'DEFZONA 1 MG TABLET',
+  'Kevicold-DS Oral Suspension',
+  'Kiozol-D Capsule',
+  'Prucapride 2 Tablet',
+  'Andylox CV 250mg/125mg Tablet',
+];
+export const doses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const usagePatterns = [
+  'Ağızdan',
+  'Cilt Üzerine',
+  'Solunum Yolu',
+  'Ağız içi',
+  'Burun içi',
+  'Dil altı',
+  'Dış kulak yolu',
+  'Göz üzerine',
+  'İntra müsküler',
+];
+export const periods = ['Gün', 'Hafta', 'Ay', 'Yıl'];
+export const usageNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const boxQuantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
