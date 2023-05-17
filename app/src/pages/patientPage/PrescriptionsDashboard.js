@@ -190,7 +190,7 @@ const PrescriptionsDashboard = () => {
                   {medicine.period}
                 </Grid>
                 <Grid item xs={2}>
-                  {medicine.usage}
+                  {medicine.medicineUsage}
                 </Grid>
                 <Grid item xs={2}>
                   {medicine.numberOfUses}

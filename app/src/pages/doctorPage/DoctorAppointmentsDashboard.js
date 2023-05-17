@@ -11,16 +11,17 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import { socket } from '../../services/socketServices';
+import { useNavigate } from 'react-router-dom';
 
 const columns = [
   { field: 'id', headerName: 'Randevu Id', width: 90 },
   {
-    field: 'date',
+    field: 'appointmentDate',
     headerName: 'Tarih',
     width: 120,
   },
   {
-    field: 'hour',
+    field: 'appointmentHour',
     headerName: 'Saat',
     width: 80,
   },
@@ -31,46 +32,18 @@ const columns = [
     width: 150,
   },
   {
-    field: 'name',
-    headerName: 'Hasta Adı',
-    width: 140,
+    field: 'patient',
+    headerName: 'Hasta Adı Soyadı',
+    width: 200,
   },
-  {
-    field: 'surname',
-    headerName: 'Hasta Soyadı',
-    width: 120,
-  },
+
 ];
 const today = dayjs();
 const DoctorAppointmentsDashboard = () => {
-  const [doctorAppointments, setDoctorAppointments] = React.useState([
-    {
-      id: 1,
-      date: '10.06.2022',
-      hour: '08:00',
-      tcnumber: '11111111111',
-      name: 'emre yasin',
-      surname: 'şallı',
-    },
-    {
-      id: 2,
-      date: '10.06.2022',
-      hour: '08:30',
-      tcnumber: '11111111111',
-      name: 'emre yasin',
-      surname: 'şallı',
-    },
-    {
-      id: 3,
-      date: '10.06.2022',
-      hour: '09:00',
-      tcnumber: '11111111111',
-      name: 'emre yasin',
-      surname: 'şallı',
-    },
-  ]);
+  const [doctorAppointments, setDoctorAppointments] = React.useState([]);
   const [selectedPatients, setSelectedPatients] = React.useState([]);
   const [appointmentDate, setAppointmentDate] = React.useState('');
+  const navigate = useNavigate();
 
   const getDoctorAppointments = () => {
     let userId = localStorage.getItem('id');
@@ -80,11 +53,23 @@ const DoctorAppointmentsDashboard = () => {
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
 
-    let currentDate = `${day}-${month}-${year}`;
+    let currentDate = `${year}-${month}-${day}`;
+    let formattedToday;
+    if(appointmentDate!== ""){
+      let dat = new Date(appointmentDate);
+      const yyyy = dat.getFullYear();
+      let mm = dat.getMonth() + 1; 
+      let dd = dat.getDate();
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+
+      formattedToday = yyyy+ '-' + mm + '-' + dd;
+    }
     socket
       .sendRequest('GET_DOCTOR_APPOINTMENTS', {
-        id: userId,
-        date: appointmentDate !== '' ? currentDate : appointmentDate,
+        id: parseInt(userId),
+        appointmentDate: appointmentDate === '' ? currentDate : formattedToday,
       })
       .then(async (data) => {
         if (data) {
@@ -129,7 +114,15 @@ const DoctorAppointmentsDashboard = () => {
               <Button onClick={() => {}} fullWidth variant="contained">
                 Seçili Hasta Muayene Ekranına Git
               </Button>
-              <Button onClick={() => {}} fullWidth variant="contained">
+              <Button onClick={() => {
+                  let patientId;
+                  for (let index = 0; index < doctorAppointments.length; index++) {
+                    if(doctorAppointments[index].id === selectedPatients[0]){
+                      patientId = doctorAppointments[index].patientId;
+                    }
+                  }
+                  navigate('../patient-analysis-results', { replace:true, state: {patientId:patientId} });
+                }} fullWidth variant="contained">
                 Seçili Hasta Tahlilleri Göster
               </Button>
             </Stack>
@@ -150,7 +143,7 @@ const DoctorAppointmentsDashboard = () => {
                 margin="normal"
                 format="DD/MM/YYYY"
                 value={
-                  appointmentDate == '' ? dayjs(new Date()) : appointmentDate
+                  appointmentDate === '' ? dayjs(new Date()) : appointmentDate
                 }
                 onChange={(value) => {
                   setAppointmentDate(value);

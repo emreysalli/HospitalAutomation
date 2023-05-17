@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Input from './../../components/Input';
 import PasswordInput from '../../components/PasswordInput';
 import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 
 const DoctorAccountInfoDashboard = () => {
   const [name, setName] = React.useState('');
@@ -16,11 +17,12 @@ const DoctorAccountInfoDashboard = () => {
   const [username, setUsername] = React.useState('');
   const [polyclinic, setPolyclinic] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const getDoctorInfo = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_DOCTOR_INFO', { id: userId })
+      .sendRequest('GET_DOCTOR_INFO', { id: parseInt(userId) })
       .then(async (data) => {
         if (data) {
           setName(data.doctorInfo.name);
@@ -38,7 +40,9 @@ const DoctorAccountInfoDashboard = () => {
 
   const updateDoctor = async () => {
     try {
+      let userId = localStorage.getItem('id');
       let newDoctorInfo = {
+        id: userId,
         name: name,
         surname: surname,
         tcnumber: tcnumber,
@@ -46,13 +50,20 @@ const DoctorAccountInfoDashboard = () => {
         password: password,
       };
       await socket
-        .sendRequest('UPDATE_DOCTOR_INFO', newDoctorInfo)
+        .sendRequest('UPDATE_DOCTOR', newDoctorInfo)
         .then((data) => {
           if (data) {
-            alert('Bilgiler güncellendi.');
+            enqueueSnackbar({
+              message: 'Bilgiler güncellendi.',
+              variant: 'success',
+            });
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Bilgiler güncellenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -87,6 +98,7 @@ const DoctorAccountInfoDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Stack direction="row" spacing={2} mt={1}>
               <Input

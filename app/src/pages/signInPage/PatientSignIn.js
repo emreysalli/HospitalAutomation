@@ -35,7 +35,6 @@ const PatientSignIn = () => {
     socket
       .sendRequest('PATIENT_LOGIN', userInfo)
       .then(async (data) => {
-        console.log(data);
         if (data?.userPresent) {
           await login({ role: 'patient', id: data?.id });
           navigate('/', { replace: true });

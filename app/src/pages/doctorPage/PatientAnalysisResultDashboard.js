@@ -8,39 +8,16 @@ import Button from '@mui/material/Button';
 import { Divider } from '@mui/material';
 import Input from '../../components/Input';
 import { socket } from '../../services/socketServices';
+import {useLocation} from 'react-router-dom';
 
 const PatientAnalysisResultDashboard = () => {
-  const [analysisResults, setAnalysisResults] = React.useState([
-    {
-      id: 1,
-      date: '16.03.2023',
-      transactionName: 'GLUKOZ',
-      result: '104',
-      resultUnit: 'mg/dL',
-      referenceValue: '74 - 106',
-    },
-    {
-      id: 2,
-      date: '16.03.2023',
-      transactionName: 'KREATİNİN',
-      result: '0.66',
-      resultUnit: 'mg/dL',
-      referenceValue: '0.50 - 0.90',
-    },
-    {
-      id: 3,
-      date: '16.03.2023',
-      transactionName: 'KOLESTEROL',
-      result: '229',
-      resultUnit: 'mg/dL',
-      referenceValue: '0 - 200',
-    },
-  ]);
+  const location = useLocation();
+  const [analysisResults, setAnalysisResults] = React.useState([]);
+  const [patientTcNumber, setPatientTcNumber] = React.useState("");
 
   const getPatientAnalysisResults = () => {
-    let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_ PATIENT_ANALYSIS_RESULTS', { id: userId })
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', {id:location?.state?.patientId })
       .then(async (data) => {
         if (data) {
           setAnalysisResults(data.analysisResults);
@@ -50,6 +27,19 @@ const PatientAnalysisResultDashboard = () => {
         console.error(err.message);
       });
   };
+
+  const getPatientAnalysisResultsWithTcNumber = () => {
+    socket
+      .sendRequest('DOCTOR_ANALYSIS_RESULTS', { tcnumber:  patientTcNumber})
+      .then(async (data) => {
+        if (data) {
+          setAnalysisResults(data.analysisResults);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  }
 
   React.useEffect(() => {
     getPatientAnalysisResults();
@@ -143,10 +133,14 @@ const PatientAnalysisResultDashboard = () => {
               id="tcnumber"
               label="T.C. Kimlik No"
               isRequired={true}
-              value="1111111111"
+              value={patientTcNumber}
+              setValue={setPatientTcNumber}
+              maxLength={11}
             />
             <Button
-              onClick={() => {}}
+              onClick={() => {
+                getPatientAnalysisResultsWithTcNumber();
+              }}
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}

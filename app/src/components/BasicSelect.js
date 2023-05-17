@@ -11,13 +11,14 @@ export default function BasicSelect({
   items,
   label,
   isDisabled,
+  w,
 }) {
   const handleChange = (event) => {
     setValue(event.target.value);
   };
-
+  let width = w === undefined ? '100%' : w;
   return (
-    <Box sx={{ minWidth: 120, width: '100%' }}>
+    <Box sx={{ minWidth: 120, width: width }}>
       <FormControl fullWidth margin="normal">
         <InputLabel id="demo-simple-select-label">{label}</InputLabel>
         <Select

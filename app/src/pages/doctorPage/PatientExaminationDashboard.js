@@ -71,6 +71,109 @@ const PatientExaminationDashboard = () => {
   const [patientMedicines, setPatientMedicines] = React.useState([]);
   const [patientDiagnoses, setPatientDiagnoses] = React.useState([]);
   const [patientTests, setPatientTests] = React.useState([]);
+  const [patientTcNumber, setPatientTcNumber] = React.useState('');
+  const [patientId, setPatientId] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [bloodGroup, setBloodGroup] = React.useState('');
+  const [birthdate, setBirthdate] = React.useState('');
+
+  const getPatientInfoWithTC = () => {
+    socket
+      .sendRequest('GET_PATIENT_INFO_WITH_TC', { tcnumber: patientTcNumber })
+      .then(async (data) => {
+        console.log(data);
+        if (data) {
+          setPatientId(data.patientInfo.id);
+          setName(data.patientInfo.name);
+          setSurname(data.patientInfo.surname);
+          setGender(data.patientInfo.gender);
+          setBloodGroup(data.patientInfo.bloodGroup);
+          setBirthdate(data.patientInfo.birthDate);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+  function generateString(length) {
+    let result = ' ';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result;
+  }
+
+  const sendPatientPrescriptionToServer = async () => {
+    let doctorId = localStorage.getItem('id');
+    const yyyy = new Date().getFullYear();
+    let mm = new Date().getMonth() + 1;
+    let dd = new Date().getDate();
+
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
+
+    let formattedToday = yyyy + '-' + mm + '-' + dd;
+    console.log();
+    let data1 = {
+      date: formattedToday,
+      prescriptionNo: generateString(5),
+      patientId: patientId,
+      doctorId: doctorId,
+    };
+    let prescriptionId;
+    await socket
+      .sendRequest('ADD_PRESCRIPTION', data1)
+      .then(async (data) => {
+        if (data) {
+          prescriptionId = await data.prescriptionId;
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+
+    let data2 = {
+      prescriptionId: prescriptionId,
+      medicines: patientMedicines,
+    };
+
+    await socket
+      .sendRequest('ADD_MEDICINES', data2)
+      .then(async (data) => {
+        if (data) {
+          console.log(data);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  const sendPatientDiagnoses = () => {
+    let doctorId = localStorage.getItem('id');
+    let data = {
+      diagnoses: patientDiagnoses,
+      doctorId: doctorId,
+      patientId: patientId,
+    };
+    socket
+      .sendRequest('ADD_DIAGNOSIS', data)
+      .then(async (data) => {
+        if (data) {
+          console.log(data);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
 
   const randomNumberInRange = () => {
     let min = 1;
@@ -80,6 +183,9 @@ const PatientExaminationDashboard = () => {
   };
 
   const addMedicineToPrescription = () => {
+    if(selectedMedicine==="" && selectedDose==="" && selectedPeriod==="" && selectedUsage==="" && selectedNumberOfUses==="" && selectedTotalBox===""){
+      return;
+    }
     let m = {
       id: randomNumberInRange(),
       medicineName: selectedMedicine,
@@ -103,6 +209,9 @@ const PatientExaminationDashboard = () => {
   };
 
   const addDiagnosis = () => {
+    if(selectedExplanation==="" && selectedType===""){
+      return;
+    }
     let d = {
       id: randomNumberInRange(),
       explanation: selectedExplanation,
@@ -119,6 +228,9 @@ const PatientExaminationDashboard = () => {
   };
 
   const addTest = () => {
+    if(selectedTest===""){
+      return;
+    }
     let t = {
       id: randomNumberInRange(),
       name: selectedTest,
@@ -149,12 +261,20 @@ const PatientExaminationDashboard = () => {
           >
             <Typography variant="h6">Hasta Bilgileri</Typography>
             <Input
-              id="tcnumber"
-              label="T.C. Kimlik No"
+              id="patienttcnumber"
+              label="Hasta T.C. Kimlik No"
               isRequired={true}
-              value="1111111111"
+              value={patientTcNumber}
+              setValue={setPatientTcNumber}
+              maxLength={11}
             />
-            <Button onClick={() => {}} fullWidth variant="contained">
+            <Button
+              onClick={() => {
+                getPatientInfoWithTC();
+              }}
+              fullWidth
+              variant="contained"
+            >
               Hasta Bilgileri Göster
             </Button>
             <Input
@@ -162,35 +282,32 @@ const PatientExaminationDashboard = () => {
               label="Ad"
               isRequired={true}
               isDisabled={true}
-              value="emre yasin"
+              value={name}
+              setValue={setName}
             />
             <Input
               id="surname"
               label="Soyad"
               isRequired={true}
               isDisabled={true}
-              value="şallı"
+              value={surname}
+              setValue={setSurname}
             />
             <Input
               id="gender"
               label="Cinsiyet"
               isRequired={true}
               isDisabled={true}
-              value="erkek"
+              value={gender}
+              setValue={setGender}
             />
             <Input
               id="bloodGroup"
               label="Kan Grubu"
               isRequired={true}
               isDisabled={true}
-              value="A RH+"
-            />
-            <Input
-              id="birthplace"
-              label="Doğum Yeri"
-              isRequired={true}
-              isDisabled={true}
-              value="istanbul"
+              value={bloodGroup}
+              setValue={setBloodGroup}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
@@ -198,7 +315,8 @@ const PatientExaminationDashboard = () => {
                 label="Doğum Tarihi"
                 format="DD/MM/YYYY"
                 margin="normal"
-                defaultValue={dayjs('2022-04-17')}
+                value={dayjs(birthdate)}
+                onChange={(value) => setBirthdate(value)}
                 required
                 sx={{ width: '100%', mt: 1 }}
               />
@@ -225,13 +343,26 @@ const PatientExaminationDashboard = () => {
                       mb={2}
                     >
                       <Typography variant="h6">Tanı</Typography>
-                      <Button
-                        sx={{ height: '30px', width: '200px' }}
-                        onClick={() => {}}
-                        variant="contained"
-                      >
-                        Gönder
-                      </Button>
+                      <Stack direction={{ xs: 'row' }}>
+                        <Button
+                          sx={{ height: '30px', width: '200px', mr: 2 }}
+                          onClick={() => {
+                            setPatientDiagnoses([]);
+                          }}
+                          variant="contained"
+                        >
+                          Temizle
+                        </Button>
+                        <Button
+                          sx={{ height: '30px', width: '200px' }}
+                          onClick={() => {
+                            sendPatientDiagnoses();
+                          }}
+                          variant="contained"
+                        >
+                          Gönder
+                        </Button>
+                      </Stack>
                     </Stack>
                     <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
                       <Grid container spacing={3} my={1}>
@@ -284,15 +415,15 @@ const PatientExaminationDashboard = () => {
                         value={selectedExplanation}
                         setValue={setSelectedExplanation}
                         items={diagnosticStatements}
+                        w='40%'
                       />
-
                       <BasicSelect
                         label="Tanı Türü"
                         value={selectedType}
                         setValue={setSelectedType}
                         items={diagnosisTypes}
+                        w='40%'
                       />
-
                       <Button
                         mt={20}
                         sx={{
@@ -327,6 +458,16 @@ const PatientExaminationDashboard = () => {
                       mb={2}
                     >
                       <Typography variant="h6">Testler</Typography>
+                      <Stack direction={{ xs: 'row' }}>
+                        <Button
+                          sx={{ height: '30px', width: '200px', mr: 2 }}
+                          onClick={() => {
+                            setPatientTests([]);
+                          }}
+                          variant="contained"
+                        >
+                          Temizle
+                        </Button>
                       <Button
                         sx={{ height: '30px', width: '200px' }}
                         onClick={() => {}}
@@ -334,6 +475,7 @@ const PatientExaminationDashboard = () => {
                       >
                         Gönder
                       </Button>
+                      </Stack>
                     </Stack>
                     <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
                       <Grid container spacing={3} my={1}>
@@ -380,8 +522,10 @@ const PatientExaminationDashboard = () => {
                         value={selectedTest}
                         setValue={setSelectedTest}
                         items={tests}
+                        w='40%'
                       />
                       <Button
+                        my={10}
                         mt={20}
                         sx={{
                           height: '50px',
@@ -417,35 +561,48 @@ const PatientExaminationDashboard = () => {
                   mb={2}
                 >
                   <Typography variant="h6">Reçete</Typography>
-                  <Button
-                    sx={{ height: '30px', width: '200px' }}
-                    onClick={() => {}}
-                    variant="contained"
-                  >
-                    Reçete Yazdır
-                  </Button>
+                  <Stack direction={{ xs: 'row' }}>
+                    <Button
+                      sx={{ height: '30px', width: '200px', mr: 2 }}
+                      onClick={() => {
+                        setPatientMedicines([]);
+                      }}
+                      variant="contained"
+                    >
+                      Temizle
+                    </Button>
+                    <Button
+                      sx={{ height: '30px', width: '200px' }}
+                      onClick={() => {
+                        sendPatientPrescriptionToServer();
+                      }}
+                      variant="contained"
+                    >
+                      Reçete Gönder
+                    </Button>
+                  </Stack>
                 </Stack>
                 <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
                   <Grid container spacing={3} my={1}>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} md={3}>
                       İlaç Adı
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2} md={3}>
                       Kullanım Şekli
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1} md={1}>
                       Doz
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1} md={1}>
                       Periyot
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={2} md={1}>
                       Kullanım Sayısı
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1} md={1}>
                       Kutu Adedi
                     </Grid>
-                    <Grid item xs={2}></Grid>
+                    <Grid item xs={2} md={2}></Grid>
                   </Grid>
                   <Divider />
                 </Box>
@@ -501,36 +658,42 @@ const PatientExaminationDashboard = () => {
                     value={selectedMedicine}
                     setValue={setSelectedMedicine}
                     items={medicines}
+                    w='22%'
                   />
                   <BasicSelect
                     label="Kullanım Şekli "
                     value={selectedUsage}
                     setValue={setSelectedUsage}
                     items={usagePatterns}
+                    w='20%'
                   />
                   <BasicSelect
                     label="Doz "
                     value={selectedDose}
                     setValue={setSelectedDose}
                     items={doses}
+                    w='5%'
                   />
                   <BasicSelect
                     label="Periyot "
                     value={selectedPeriod}
                     setValue={setSelectedPeriod}
                     items={periods}
+                    w='5%'
                   />
                   <BasicSelect
                     label="Kullanım Sayısı "
                     value={selectedNumberOfUses}
                     setValue={setSelectedNumberOfUses}
                     items={usageNumbers}
+                    w='5%'
                   />
                   <BasicSelect
                     label="Kutu Adedi "
                     value={selectedTotalBox}
                     setValue={setSelectedTotalBox}
                     items={boxQuantities}
+                    w='5%'
                   />
                   <Button
                     sx={{ height: '50px', width: '80px' }}
