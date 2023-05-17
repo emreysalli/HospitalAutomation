@@ -748,6 +748,149 @@ io.on('connection', (socket) => {
         })
     });
 
+    socket.on('GET_PATIENT_INFO_WITH_TC', (data, callback) => {
+        var selectQuery = "SELECT * from patients WHERE tcnumber = '"+ data.tcnumber +"'"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    patientInfo: result[0]
+                }
+            });
+        })
+    });
+    
+    socket.on('ADD_PRESCRIPTION', (data, callback) => {
+        var insertQuery = "INSERT INTO prescriptions (date, prescriptionNo, patientId, doctorId) VALUES ('"+ data.date +"','"+ data.prescriptionNo +"','"+ data.patientId +"','"+ data.doctorId +"')"
+        conn.query(insertQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    prescriptionId:result.insertId
+                }
+            });
+        })
+
+    });
+
+    socket.on('ADD_MEDICINES', (data, callback) => {
+        for (let index = 0; index < data.medicines.length; index++) {
+            var insertQuery = "INSERT INTO medicines (medicineName, dose, period, medicineUsage, numberOfUses, totalBox, prescriptionId) VALUES ('"+ data.medicines[index].medicineName +"','"+ data.medicines[index].dose +"','"+ data.medicines[index].period +"','"+ data.medicines[index].usage +"','"+ data.medicines[index].numberOfUses +"','"+ data.medicines[index].totalBox +"', '"+data.prescriptionId+"')"
+            conn.query(insertQuery, function(err, result) {
+                if (err) {
+                    callback({
+                        error: err
+                    });
+                }
+            })
+        }
+        callback({
+            data: "ok"
+        });
+    });
+
+    socket.on('ADD_DIAGNOSIS', (data, callback) => {
+        for (let index = 0; index < data.diagnoses.length; index++) {
+            insertQuery = "INSERT INTO diagnosis (explanation, type, doctorId, patientId) VALUES ('"+ data.diagnoses[index].explanation +"','"+ data.diagnoses[index].type +"','"+ data.doctorId +"','"+ data.patientId +"')"
+            conn.query(insertQuery, function(err, result) {
+                if (err) {
+                    callback({
+                        error: err
+                    });
+                }
+            })
+            callback({
+                data: "ok"
+            });
+        }
+    });
+
+    socket.on('GET_STAFF_INFO', (data, callback) => {
+        var selectQuery = "SELECT * from staff WHERE id = '" + data.id + "'"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            console.log(result)
+            callback({
+                data: {
+                    "staffInfo": {
+                        "name": result[0].name,
+                        "surname": result[0].surname,
+                        "tcnumber": result[0].tcnumber,
+                        "username": result[0].username,
+                        "password": result[0].password
+                    }
+                }
+            });
+        })
+    });
+
+    socket.on('GET_LABTECHNICIAN_INFO', (data, callback) => {
+        var selectQuery = "SELECT * from labtechnicians WHERE id = '" + data.id + "'"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            console.log(result)
+            callback({
+                data: {
+                    "labTechnicianInfo": {
+                        "name": result[0].name,
+                        "surname": result[0].surname,
+                        "tcnumber": result[0].tcnumber,
+                        "username": result[0].username,
+                        "password": result[0].password
+                    }
+                }
+            });
+        })
+    });
+
+    socket.on('SEND_ANALYSIS_RESULT_WITH_TC', (data, callback) => {
+        insertQuery = "INSERT INTO analysisresults as a (a.date, a.transactionName, a.result, a.resultUnit, a.referenceValue, a.patientId) VALUES ('"+ data.date +"','"+ data.transactionName +"','"+ data.result +"','"+ data.resultUnit +"','"+ referenceValue +"') INNER JOIN patients as p ON p.id = a.patientId WHERE p.tcnumber = '"+ data.tcnumber +"'"
+        conn.query(insertQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    analysisResults: result
+                }
+            });
+        })
+    });
+
+    socket.on('ADD_ANALYSIS_RESULT', (data, callback) => {
+        insertQuery = "INSERT INTO analysisresults (date, transactionName, result, resultUnit, referenceValue, patientId) VALUES ('"+ data.date +"','"+ data.transactionName +"','"+ data.result +"','"+ data.resultUnit +"','"+ data.referenceValue +"','"+ data.patientId +"')"
+        conn.query(insertQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    analysisResults: result
+                }
+            });
+        })
+    });
+
 });
 
 server.listen(3001, () => {
