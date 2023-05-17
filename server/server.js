@@ -876,19 +876,19 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_ANALYSIS_RESULT', (data, callback) => {
-        insertQuery = "INSERT INTO analysisresults (date, transactionName, result, resultUnit, referenceValue, patientId) VALUES ('"+ data.date +"','"+ data.transactionName +"','"+ data.result +"','"+ data.resultUnit +"','"+ data.referenceValue +"','"+ data.patientId +"')"
-        conn.query(insertQuery, function(err, result) {
-            if (err) {
-                callback({
-                    error: err
-                });
-            }
-            callback({
-                data: {
-                    analysisResults: result
+        for (let index = 0; index < data.diagnoses.length; index++) {
+            insertQuery = "INSERT INTO analysisresults (date, transactionName, result, resultUnit, referenceValue, patientId) VALUES ('"+ data.analysisResults[index].date +"','"+ data.analysisResults[index].transactionName +"','"+ data.analysisResults[index].result +"','"+ data.analysisResults[index].resultUnit +"','"+ data.analysisResults[index].referenceValue +"','"+ data.patientId +"')"
+            conn.query(insertQuery, function(err, result) {
+                if (err) {
+                    callback({
+                        error: err
+                    });
                 }
-            });
-        })
+            })
+        }
+        callback({
+            data: "ok"
+        });
     });
 
 });
