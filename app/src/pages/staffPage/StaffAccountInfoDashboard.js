@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Input from '../../components/Input';
 import PasswordInput from '../../components/PasswordInput';
 import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 
 const StaffAccountInfoDashboard = () => {
   const [name, setName] = React.useState('');
@@ -15,6 +16,7 @@ const StaffAccountInfoDashboard = () => {
   const [tcnumber, setTcNumber] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const getStaffInfo = () => {
     let userId = localStorage.getItem('id');
@@ -22,11 +24,11 @@ const StaffAccountInfoDashboard = () => {
       .sendRequest('GET_STAFF_INFO', { id: userId })
       .then(async (data) => {
         if (data) {
-          setName(data.staff.name);
-          setSurname(data.staff.surname);
-          setTcNumber(data.staff.tcnumber);
-          setUsername(data.staff.username);
-          setPassword(data.staff.password);
+          setName(data.staffInfo.name);
+          setSurname(data.staffInfo.surname);
+          setTcNumber(data.staffInfo.tcnumber);
+          setUsername(data.staffInfo.username);
+          setPassword(data.staffInfo.password);
         }
       })
       .catch((err) => {
@@ -36,7 +38,9 @@ const StaffAccountInfoDashboard = () => {
 
   const updateStaff = async () => {
     try {
+      let userId = localStorage.getItem('id');
       let newStaffInfo = {
+        id: userId,
         name: name,
         surname: surname,
         tcnumber: tcnumber,
@@ -44,13 +48,20 @@ const StaffAccountInfoDashboard = () => {
         password: password,
       };
       await socket
-        .sendRequest('UPDATE_STAFF_INFO', newStaffInfo)
+        .sendRequest('UPDATE_STAFF', newStaffInfo)
         .then((data) => {
           if (data) {
-            alert('Bilgiler güncellendi.');
+            enqueueSnackbar({
+              message: 'Bilgiler güncellendi.',
+              variant: 'success',
+            });
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Bilgiler güncellenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -85,6 +96,7 @@ const StaffAccountInfoDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Stack direction="row" spacing={2} mt={1}>
               <Input

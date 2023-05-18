@@ -31,13 +31,12 @@ const StaffSignIn = () => {
       username: username,
       password: password,
     };
-    await login({ role: 'staff' });
-    navigate('/', { replace: true });
+
     socket
       .sendRequest('STAFF_LOGIN', userInfo)
       .then(async (data) => {
         if (data?.userPresent) {
-          await login({ role: 'staff' });
+          await login({ role: 'staff', id: data?.id  });
           navigate('/', { replace: true });
         } else {
           enqueueSnackbar({

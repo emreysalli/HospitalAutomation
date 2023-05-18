@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Input from '../../components/Input';
 import PasswordInput from '../../components/PasswordInput';
 import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 
 const LabTechnicianAccountInfoDashboard = () => {
   const [name, setName] = React.useState('');
@@ -15,6 +16,7 @@ const LabTechnicianAccountInfoDashboard = () => {
   const [tcnumber, setTcNumber] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const getLabTechnicianInfo = () => {
     let userId = localStorage.getItem('id');
@@ -36,7 +38,9 @@ const LabTechnicianAccountInfoDashboard = () => {
 
   const updateLabTechnician = async () => {
     try {
+      let userId = localStorage.getItem('id');
       let newLabTechnicianInfo = {
+        id: userId,
         name: name,
         surname: surname,
         tcnumber: tcnumber,
@@ -44,13 +48,20 @@ const LabTechnicianAccountInfoDashboard = () => {
         password: password,
       };
       await socket
-        .sendRequest('UPDATE_LAB_TECHNICIAN_INFO', newLabTechnicianInfo)
+        .sendRequest('UPDATE_LABTECHNICIAN', newLabTechnicianInfo)
         .then((data) => {
           if (data) {
-            alert('Bilgiler güncellendi.');
+            enqueueSnackbar({
+              message: 'Bilgiler güncellendi.',
+              variant: 'success',
+            });
           }
         })
         .catch((err) => {
+          enqueueSnackbar({
+            message: 'Bilgiler güncellenemedi.',
+            variant: 'error',
+          });
           console.error(err.message);
         });
     } catch (err) {
@@ -85,6 +96,7 @@ const LabTechnicianAccountInfoDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Stack direction="row" spacing={2} mt={1}>
               <Input

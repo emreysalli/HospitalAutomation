@@ -1,6 +1,5 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -9,99 +8,129 @@ import Button from '@mui/material/Button';
 import CustomDataGrid from '../../components/CustomDataGrid';
 import Input from './../../components/Input';
 import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 
 const columns = [
-  { field: 'id', headerName: 'Randevu Id', width: 90 },
+  { field: 'id', headerName: 'Tahlil Id', width: 70 },
   {
     field: 'date',
     headerName: 'Tarih',
-    width: 120,
-  },
-  {
-    field: 'hour',
-    headerName: 'Saat',
-    width: 80,
-  },
-  {
-    field: 'tcnumber',
-    headerName: 'T.C. Kimlik No',
-    type: 'number',
     width: 150,
   },
   {
-    field: 'name',
-    headerName: 'Hasta Adı',
-    width: 140,
+    field: 'patient',
+    headerName: 'Hasta Adı Soyadı',
+    width: 150,
   },
   {
-    field: 'surname',
-    headerName: 'Hasta Soyadı',
+    field: 'transactionName',
+    headerName: 'İşlem Adı',
+    width: 110,
+  },
+  {
+    field: 'result',
+    headerName: 'Sonuç',
+    width: 90,
+  },
+  {
+    field: 'resultUnit',
+    headerName: 'Sonuç Birimi',
     width: 120,
+  },
+  {
+    field: 'referenceValue',
+    headerName: 'Referans Değeri',
+    width: 150,
   },
 ];
 
 const LTPatientAnalysisResultDashboard = () => {
-  const [doctorAppointments, setDoctorAppointments] = React.useState([
-    {
-      id: 1,
-      date: '10.06.2022',
-      hour: '08:00',
-      tcnumber: '11111111111',
-      name: 'emre yasin',
-      surname: 'şallı',
-    },
-    {
-      id: 2,
-      date: '10.06.2022',
-      hour: '08:30',
-      tcnumber: '11111111111',
-      name: 'emre yasin',
-      surname: 'şallı',
-    },
-    {
-      id: 3,
-      date: '10.06.2022',
-      hour: '09:00',
-      tcnumber: '11111111111',
-      name: 'emre yasin',
-      surname: 'şallı',
-    },
-  ]);
-  const [selectedPatients, setSelectedPatients] = React.useState([]);
+  const [analysisResults, setAnalysisResults] = React.useState([]);
+  const [selectedAnalysisResult, setSelectedAnalysisResult] = React.useState(
+    []
+  );
+  const [id, setId] = React.useState('');
+  const [date, setDate] = React.useState('');
+  const [patient, setPatient] = React.useState('');
+  const [transactionName, setTransactionName] = React.useState('');
+  const [result, setResult] = React.useState('');
+  const [resultUnit, setResultUnit] = React.useState('');
+  const [referenceValue, setReferenceValue] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
 
-  const getDoctorAppointments = () => {
-    let userId = localStorage.getItem('id');
-    const date = new Date();
-
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-
-    let currentDate = `${day}-${month}-${year}`;
+  const getLabTechnicianInfo = () => {
     socket
-      .sendRequest('GET_DOCTOR_APPOINTMENTS', {
-        id: userId,
-      })
+      .sendRequest('GET_INCONCLUSIVE_ANALYSIS_RESULTS', {})
       .then(async (data) => {
+        console.log(data);
         if (data) {
-          setDoctorAppointments(data.appointments);
+          setAnalysisResults(data.analysisResults);
         }
       })
       .catch((err) => {
         console.error(err.message);
       });
   };
+
+  const getAnalysisResult = async () => {
+    let temp = analysisResults.find(
+      (analysisResult) => analysisResult.id === selectedAnalysisResult[0]
+    );
+    setId(temp.id);
+    setDate(temp.date);
+    setPatient(temp.patient);
+    setTransactionName(temp.transactionName);
+    setReferenceValue(temp.referenceValue);
+    setResultUnit(temp.resultUnit);
+    setResult(temp.result);
+  };
+
+  // UPDATE_ANALYSIS_RESULT
+
+  const updateResult = async () => {
+    try {
+      let temp = {
+        id: id,
+        result: result,
+      };
+      await socket
+        .sendRequest('UPDATE_ANALYSIS_RESULT', temp)
+        .then((data) => {
+          if (data) {
+            enqueueSnackbar({
+              message: 'Bilgiler güncellendi.',
+              variant: 'success',
+            });
+          }
+        })
+        .catch((err) => {
+          enqueueSnackbar({
+            message: 'Bilgiler güncellenemedi.',
+            variant: 'error',
+          });
+          console.error(err.message);
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const deleteInputs=()=>{
+    setId("");
+    setDate("");
+    setPatient("");
+    setTransactionName("");
+    setReferenceValue("");
+    setResultUnit("");
+    setResult("");
+  }
+
   React.useEffect(() => {
-    getDoctorAppointments();
+    getLabTechnicianInfo();
   }, []);
 
   return (
-    <Container
-      sx={{
-        mt: 4,
-        mb: 4,
-      }}
-    >
+    <Box px={20} pt={10}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
           <Paper
@@ -115,13 +144,19 @@ const LTPatientAnalysisResultDashboard = () => {
               İstenilen Hasta Tahlilleri
             </Typography>
             <CustomDataGrid
-              rows={doctorAppointments}
+              rows={analysisResults}
               columns={columns}
-              selectionModel={selectedPatients}
-              setSelectionModel={setSelectedPatients}
+              selectionModel={selectedAnalysisResult}
+              setSelectionModel={setSelectedAnalysisResult}
               isMustOneSelected={true}
             />
-            <Button onClick={() => {}} fullWidth variant="contained">
+            <Button
+              onClick={() => {
+                getAnalysisResult();
+              }}
+              fullWidth
+              variant="contained"
+            >
               Seçili Tahlile Sonuç Gir
             </Button>
           </Paper>
@@ -134,26 +169,72 @@ const LTPatientAnalysisResultDashboard = () => {
               flexDirection: 'column',
             }}
           >
-            <Typography variant="h6">Hasta Tahlili</Typography>
-            <Input
-              id="date"
-              label="Seçili Hasta T.C. Kimlik No"
-              isRequired={true}
-            />
-            <Input id="selectedTest" label="Seçili Test" isRequired={true} />
-            <Input id="date" label="Tarih" isRequired={true} />
-            <Input
-              id="testResult"
-              label="Test Sonucu"
-              isMultiline={true}
-              isRequired={true}
-            />
+            <Stack direction="row" spacing={2} mt={1} style={{justifyContent:"space-between"}}>
+              <Typography variant="h6">Hasta Tahlili</Typography>
+              <Button
+                onClick={() => {
+                  deleteInputs();
+                }}
+                variant="contained"
+                
+              >
+                Temizle
+              </Button>
+            </Stack>
+            <Stack spacing={2} mt={1}>
+              <Input
+                id="date"
+                label="Tahlil Tarihi"
+                isRequired={true}
+                isDisabled={true}
+                value={date}
+                setValue={setDate}
+              />
+              <Input
+                id="patient"
+                label="Hasta Adı Soyadı"
+                isRequired={true}
+                isDisabled={true}
+                value={patient}
+                setValue={setPatient}
+              />
+              <Input
+                id="transactionName"
+                label="İşlem Adı"
+                isRequired={true}
+                isDisabled={true}
+                value={transactionName}
+                setValue={setTransactionName}
+              />
+              <Input
+                id="referenceValue"
+                label="Referans Değeri"
+                isRequired={true}
+                isDisabled={true}
+                value={referenceValue}
+                setValue={setReferenceValue}
+              />
+              <Input
+                id="resultUnit"
+                label="Sonuç Birimi"
+                isRequired={true}
+                isDisabled={true}
+                value={resultUnit}
+                setValue={setResultUnit}
+              />
+              <Input
+                id="result"
+                label="Sonuç"
+                isRequired={true}
+                value={result}
+                setValue={setResult}
+              />
+            </Stack>
             <Button
               onClick={() => {
-                getDoctorAppointments();
+                updateResult();
               }}
               fullWidth
-              format="DD/MM/YYYY"
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
@@ -162,7 +243,7 @@ const LTPatientAnalysisResultDashboard = () => {
           </Paper>
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 };
 

@@ -31,13 +31,12 @@ const LabTechnicianSignIn = () => {
       username: username,
       password: password,
     };
-    await login({ role: 'labtechnician' });
-    navigate('/', { replace: true });
+
     socket
       .sendRequest('LAB_TECHNICIAN_LOGIN', userInfo)
       .then(async (data) => {
         if (data?.userPresent) {
-          await login({ role: 'labtechnician' });
+          await login({ role: 'labtechnician', id: data?.id  });
           navigate('/', { replace: true });
         } else {
           enqueueSnackbar({
