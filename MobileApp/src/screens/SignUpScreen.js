@@ -210,9 +210,41 @@ const SignUpScreen = () => {
     }
   };
 
+  const getInputDate = () => {
+    if(date.toDateString() === new Date().toDateString()){
+      return "";
+    }
+    const yyyy = date.getFullYear();
+    let mm = date.getMonth() + 1;
+    let dd = date.getDate();
+
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
+
+    formattedBirthDate = dd + '-' + mm + '-' + yyyy;
+    return formattedBirthDate;
+  };
+
   return (
     <>
       <ScrollView>
+      <DatePicker
+        modal
+        title="Doğum Tarihinizi Seçiniz"
+        confirmText="Onayla"
+        cancelText="İptal"
+        open={open}
+        date={date}
+        mode="date"
+        maximumDate={new Date()}
+        onConfirm={(date) => {
+          setOpen(false);
+          setDate(date);
+        }}
+        onCancel={() => {
+          setOpen(false);
+        }}
+      />
         <Center style={{ ...styles.container, marginBottom: 200 }}>
           <Image
             source={require('../assets/logos/login.png')}
@@ -385,32 +417,36 @@ const SignUpScreen = () => {
               ) : null}
             </FormControl>
 
-            <Button
-                style={styles.loginButton}
-                size={themeStyle.STANDART_BUTTON_SIZE}
-                onPress={() => setOpen(true)}
+            <FormControl isRequired isInvalid={'birthDate' in errors}>
+            <FormControl.Label>Doğum Tarihi</FormControl.Label>
+            <Input
+              style={styles.loginPhoneNumberInput}
+              variant="outline"
+              isReadOnly={true}
+              InputRightElement={
+                <Button
+                  size="xs"
+                  rounded="none"
+                  w="1/6"
+                  h="full"
+                  onPress={() => setOpen(true)}
+                >
+                  Değiştir
+                </Button>
+              }
+              placeholder="Doğum Tarihi"
+              value={getInputDate()}
+            />
+            {'birthDate' in errors ? (
+              <FormControl.ErrorMessage
+                leftIcon={<WarningOutlineIcon size="xs" />}
               >
-                Doğum Tarihinizi Seçiniz
-              </Button>
-              <DatePicker
-                modal
-                title="Doğum Tarihinizi Seçiniz"
-                confirmText="Onayla"
-                cancelText="İptal"
-                open={open}
-                date={date}
-                mode="date"
-                maximumDate={new Date()}
-                onConfirm={(date) => {
-                  setOpen(false);
-                  setDate(date);
-                }}
-                onCancel={() => {
-                  setOpen(false);
-                }}
-              />
+                {errors.birthDate}
+              </FormControl.ErrorMessage>
+            ) : null}
+          </FormControl>
 
-            <FormControl isRequired isInvalid={'birthPlace' in errors} style={{marginTop:"-3%"}}>
+            <FormControl isRequired isInvalid={'birthPlace' in errors}>
               <FormControl.Label>Doğum Yeri</FormControl.Label>
               <Input
                 style={styles.loginPhoneNumberInput}
