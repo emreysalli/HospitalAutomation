@@ -19,7 +19,6 @@ const AnalysisResultScreen = () => {
           .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { id: idParsedValue })
           .then(async (data) => {
             if (data) {
-              console.log(data.analysisResults)
               setAnalysisResults(data.analysisResults);
             }
           })
