@@ -15,7 +15,7 @@ function ResponsiveAppBar() {
             sx={{ justifyContent: 'center', alignItems: 'center' }}
           >
             <LocalHospitalIcon
-              sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
+              sx={{ display: 'flex' , mr: 1 }}
             />
             <Typography
               variant="h6"
@@ -27,12 +27,29 @@ function ResponsiveAppBar() {
                 display: { xs: 'none', md: 'flex' },
                 fontFamily: 'monospace',
                 fontWeight: 700,
+                letterSpacing: '.2rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              Hastane Bilgi Yönetim Sistemi
+            </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="/"
+              sx={{
+                mr: 2,
+                display: { xs: 'flex', md: 'none' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
                 letterSpacing: '.3rem',
                 color: 'inherit',
                 textDecoration: 'none',
               }}
             >
-              Hastane Otomasyonu
+              HBYS
             </Typography>
           </Stack>
           <Stack

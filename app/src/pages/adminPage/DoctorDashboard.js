@@ -78,7 +78,7 @@ const DoctorDashboard = () => {
         .then((data) => {
           if (data) {
             setPolyclinics(data.polyclinics);
-            for (let i = 0; i < polyclinics; i++) {
+            for (let i = 0; i < polyclinics.length; i++) {
               temp.push(polyclinics[i].polyclinicName);
             }
             setPolyclinicNames(temp);
@@ -116,17 +116,19 @@ const DoctorDashboard = () => {
       tcnumber === '' ||
       polyclinic === '' ||
       username === '' ||
-      password === ''
+      password === '' ||
+      tcnumber.length < 11
     ) {
       enqueueSnackbar({
         message:
           'Ad, soyad, T.C. kimlik no, poliklinik, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
+      return;
     }
     try {
       let polyclinicId;
-      for (let i = 0; i < polyclinics; i++) {
+      for (let i = 0; i < polyclinics.length; i++) {
         if (polyclinics[i].polyclinicName === polyclinic) {
           polyclinicId = polyclinics[i].id;
           break;
@@ -149,6 +151,12 @@ const DoctorDashboard = () => {
               message: 'Yeni doktor eklendi.',
               variant: 'success',
             });
+            setName('');
+            setSurname('');
+            setTcNumber('');
+            setPolyclinic('');
+            setUsername('');
+            setPassword('');
             getDoctors();
           }
         })
@@ -251,6 +259,7 @@ const DoctorDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <BasicSelect
               label="Poliklinik"

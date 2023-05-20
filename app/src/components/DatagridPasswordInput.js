@@ -24,13 +24,13 @@ const DatagridPasswordInput = ({ label, val }) => {
       required
       fullWidth
       variant="outlined"
-      id="password"
+      id={val.id}
       name="password"
     >
       <InputLabel htmlFor="standard-adornment-password">{label}</InputLabel>
       <Input
         disabled
-        id="password"
+        id={val.id}
         name="password"
         value={value}
         onChange={handleChange}

@@ -14,6 +14,8 @@ import DatagridPasswordInput from './../../components/DatagridPasswordInput';
 import PasswordInput from '../../components/PasswordInput';
 import BasicSelect from './../../components/BasicSelect';
 import { useSnackbar } from 'notistack';
+import { genders, bloodGroups } from './../../data/constants';
+
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -108,8 +110,6 @@ const PatientDashboard = () => {
   const [rows, setRows] = React.useState([]);
   const [selectionModel, setSelectionModel] = React.useState([]);
   const { enqueueSnackbar } = useSnackbar();
-  const genders = ['e', 'k'];
-  const bloodGroups = ['A+', 'A-', 'B+', 'B-', '0+', '0-', 'AB+', 'AB-'];
 
   const getPatients = async () => {
     try {
@@ -140,15 +140,26 @@ const PatientDashboard = () => {
       phoneNumber === '' ||
       address === '' ||
       username === '' ||
-      password === ''
+      password === '' ||
+      tcnumber.length < 11
     ) {
       enqueueSnackbar({
         message:
           'Ad, soyad, T.C. kimlik no, cinsiyet, kan grubu, doğum yeri, doğum tarihi, telefon numarası, adres, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
+      return;
     }
     try {
+      let dat = new Date(birthdate);
+      const yyyy = dat.getFullYear();
+      let mm = dat.getMonth() + 1; 
+      let dd = dat.getDate();
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+
+      const formattedBirthDate =yyyy+ '-' + mm + '-' + dd;
       let newPatientInfo = {
         name: name,
         surname: surname,
@@ -156,7 +167,7 @@ const PatientDashboard = () => {
         gender: gender,
         bloodGroup: bloodGroup,
         birthPlace: birthplace,
-        birthDate: birthdate,
+        birthDate: formattedBirthDate,
         phoneNumber: phoneNumber,
         address: address,
         username: username,
@@ -170,6 +181,17 @@ const PatientDashboard = () => {
               message: 'Yeni hasta eklendi.',
               variant: 'success',
             });
+            setName('');
+            setSurname('');
+            setTcNumber('');
+            setGender('');
+            setBloodGroup('');
+            setBirthplace('');
+            setBirthdate('');
+            setPhoneNumber('');
+            setAddress('');
+            setUsername('');
+            setPassword('');
             getPatients();
           }
         })
@@ -190,7 +212,6 @@ const PatientDashboard = () => {
       await socket
         .sendRequest('REMOVE_PATIENT', selectionModel)
         .then((data) => {
-          console.log(data);
           if (data) {
             enqueueSnackbar({
               message: 'Seçili hastalar silindi.',
@@ -274,6 +295,7 @@ const PatientDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Stack direction="row" spacing={2}>
               <BasicSelect
@@ -316,6 +338,7 @@ const PatientDashboard = () => {
               isRequired={true}
               value={phoneNumber}
               setValue={setPhoneNumber}
+              maxLength={11}
             />
             <Input
               id="address"

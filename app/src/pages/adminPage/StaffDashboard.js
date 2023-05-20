@@ -78,12 +78,14 @@ const StaffDashboard = () => {
       surname === '' ||
       tcnumber === '' ||
       username === '' ||
-      password === ''
+      password === '' ||
+      tcnumber.length<11
     ) {
       enqueueSnackbar({
         message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
+      return;
     }
     let newStaff = {
       name: name,
@@ -100,6 +102,11 @@ const StaffDashboard = () => {
             message: 'Yeni hasta kabul personel eklendi.',
             variant: 'success',
           });
+          setName('');
+          setSurname('');
+          setTcNumber('');
+          setUsername('');
+          setPassword('');
           getStaff();
         }
       })
@@ -198,6 +205,7 @@ const StaffDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Input
               id="username"
