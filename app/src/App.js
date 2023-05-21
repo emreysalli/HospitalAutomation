@@ -12,7 +12,7 @@ import PolyclinicDashboard from './pages/adminPage/PolyclinicDashboard';
 import LabTechnicianDashboard from './pages/adminPage/LabTechnicianDashboard';
 import StaffDashboard from './pages/adminPage/StaffDashboard';
 import PatientDashboard from './pages/adminPage/PatientDashboard';
-import Inbox from './pages/adminPage/Inbox';
+import AdminInbox from './pages/adminPage/AdminInbox';
 import { AuthContext } from './contexts/AuthContext';
 import LoginScreen from './pages/LoginScreen';
 import AdminSignIn from './pages/signInPage/AdminSignIn';
@@ -42,6 +42,10 @@ import StaffHomePage from './pages/staffPage/StaffHomePage';
 import StaffAccountInfoDashboard from './pages/staffPage/StaffAccountInfoDashboard';
 import PatientAdmissionPage from './pages/staffPage/PatientAdmissionPage';
 import { SnackbarProvider } from 'notistack';
+import DoctorInbox from './pages/doctorPage/DoctorInbox';
+import StaffInbox from './pages/staffPage/StaffInbox';
+import LabTechnicianInbox from './pages/labTechnicianPage/LabTechnicianInbox';
+import PatientInbox from './pages/patientPage/PatientInbox';
 const theme = createTheme({
   palette: {
     background: {
@@ -127,7 +131,7 @@ const App = () => {
                       />
                       <Route path="staff" element={<StaffDashboard />} />
                       <Route path="patients" element={<PatientDashboard />} />
-                      <Route path="inbox" element={<Inbox />} />
+                      <Route path="inbox" element={<AdminInbox />} />
                     </Route>
                   ) : user.role === 'doctor' ? (
                     /* doktor paneli */
@@ -149,7 +153,7 @@ const App = () => {
                         path="patient-analysis-results"
                         element={<PatientAnalysisResultDashboard />}
                       />
-                      <Route path="inbox" element={<Inbox />} />
+                      <Route path="inbox" element={<DoctorInbox />} />
                     </Route>
                   ) : user.role === 'staff' ? (
                     /* hasta kabul personel paneli */
@@ -163,7 +167,7 @@ const App = () => {
                         path="patient-admission"
                         element={<PatientAdmissionPage />}
                       />
-                      <Route path="inbox" element={<Inbox />} />
+                      <Route path="inbox" element={<StaffInbox />} />
                     </Route>
                   ) : user.role === 'labtechnician' ? (
                     /* laborant paneli */
@@ -177,7 +181,7 @@ const App = () => {
                         path="patient-analysis-results"
                         element={<LTPatientAnalysisResultDashboard />}
                       />
-                      <Route path="inbox" element={<Inbox />} />
+                      <Route path="inbox" element={<LabTechnicianInbox />} />
                     </Route>
                   ) : user.role === 'patient' ? (
                     /* hasta paneli */
@@ -207,7 +211,7 @@ const App = () => {
                         path="prescriptions"
                         element={<PrescriptionsDashboard />}
                       />
-                      <Route path="inbox" element={<Inbox />} />
+                      <Route path="inbox" element={<PatientInbox />} />
                     </Route>
                   ) : (
                     <Route path="*" element={<NoMatch />} />
