@@ -38,7 +38,7 @@ const columns = [
   },
 
 ];
-const today = dayjs();
+
 const DoctorAppointmentsDashboard = () => {
   const [doctorAppointments, setDoctorAppointments] = React.useState([]);
   const [selectedPatients, setSelectedPatients] = React.useState([]);
@@ -53,7 +53,10 @@ const DoctorAppointmentsDashboard = () => {
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
 
+    if (day < 10) day = '0' + day;
+    if (month < 10) month = '0' + month;
     let currentDate = `${year}-${month}-${day}`;
+
     let formattedToday;
     if(appointmentDate!== ""){
       let dat = new Date(appointmentDate);
@@ -66,6 +69,7 @@ const DoctorAppointmentsDashboard = () => {
 
       formattedToday = yyyy+ '-' + mm + '-' + dd;
     }
+
     socket
       .sendRequest('GET_DOCTOR_APPOINTMENTS', {
         id: parseInt(userId),
@@ -80,6 +84,7 @@ const DoctorAppointmentsDashboard = () => {
         console.error(err.message);
       });
   };
+
   React.useEffect(() => {
     getDoctorAppointments();
   }, []);
@@ -111,7 +116,15 @@ const DoctorAppointmentsDashboard = () => {
               isMustOneSelected={true}
             />
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={12} m={2}>
-              <Button onClick={() => {}} fullWidth variant="contained">
+              <Button onClick={() => {
+                let patientId;
+                for (let index = 0; index < doctorAppointments.length; index++) {
+                  if(doctorAppointments[index].id === selectedPatients[0]){
+                    patientId = doctorAppointments[index].patientId;
+                  }
+                }
+                navigate('../patient-examination', { replace:true, state: {patientId:patientId} });
+              }} fullWidth variant="contained">
                 Seçili Hasta Muayene Ekranına Git
               </Button>
               <Button onClick={() => {
@@ -147,9 +160,6 @@ const DoctorAppointmentsDashboard = () => {
                 }
                 onChange={(value) => {
                   setAppointmentDate(value);
-                  // setAppointmentDate(
-                  //   new Date(value).toISOString().split('T')[0]
-                  // );
                 }}
                 required
                 sx={{ width: '100%', mt: 1 }}
@@ -160,7 +170,6 @@ const DoctorAppointmentsDashboard = () => {
                 getDoctorAppointments();
               }}
               fullWidth
-              format="DD/MM/YYYY"
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >

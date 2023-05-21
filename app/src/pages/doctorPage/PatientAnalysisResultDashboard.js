@@ -9,8 +9,10 @@ import { Divider } from '@mui/material';
 import Input from '../../components/Input';
 import { socket } from '../../services/socketServices';
 import {useLocation} from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const PatientAnalysisResultDashboard = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const [analysisResults, setAnalysisResults] = React.useState([]);
   const [patientTcNumber, setPatientTcNumber] = React.useState("");
@@ -29,6 +31,13 @@ const PatientAnalysisResultDashboard = () => {
   };
 
   const getPatientAnalysisResultsWithTcNumber = () => {
+    if(patientTcNumber.length<11 || patientTcNumber===""){
+      enqueueSnackbar({
+        message: 'Hasta T.C. Kimlik No hatalı girdiniz.',
+        variant: 'error',
+      });
+      return;
+    }
     socket
       .sendRequest('DOCTOR_ANALYSIS_RESULTS', { tcnumber:  patientTcNumber})
       .then(async (data) => {
@@ -42,7 +51,14 @@ const PatientAnalysisResultDashboard = () => {
   }
 
   React.useEffect(() => {
-    getPatientAnalysisResults();
+    if (location?.state?.patientId === undefined) {
+      enqueueSnackbar({
+        message: 'Hasta T.C. Kimlik No giriniz.',
+        variant: 'info',
+      });
+    }else{
+      getPatientAnalysisResults()
+    }
   }, []);
 
   return (
