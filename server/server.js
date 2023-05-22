@@ -986,31 +986,35 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_USER_WISHES_AND_COMPLAINTS', (data, callback) => {
-        var selectQuery = "SELECT id, subject, description, DATE_FORMAT(p.creationDate,'%d-%m-%Y') as creationDate, DATE_FORMAT(p.solutionDate,'%d-%m-%Y') as solutionDate FROM wishesAndComplaints WHERE userId = '"+ data.userId +"' AND userType = '"+ data.userType +"'"
+        var selectQuery = "SELECT id, subject, description, DATE_FORMAT(creationDate,'%d-%m-%Y') as creationDate, DATE_FORMAT(solutionDate,'%d-%m-%Y') as solutionDate FROM wishesAndComplaints WHERE userId = '"+ data.userId +"' AND userType = '"+ data.userType +"'"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
                     error: err
                 });
             }
+            callback({
+                data:{
+                    wishes:result
+                }
+            });
         })
-        callback({
-            data: "ok"
-        });
+
     });
 
     socket.on('GET_WISHES_AND_COMPLAINTS', (data, callback) => {
-        var selectQuery = "SELECT id, subject, description, DATE_FORMAT(p.creationDate,'%d-%m-%Y') as creationDate, DATE_FORMAT(p.solutionDate,'%d-%m-%Y') as solutionDate, userType, userId, name, surname FROM wishesAndComplaints"
+        var selectQuery = "SELECT id, subject, description, DATE_FORMAT(creationDate,'%d-%m-%Y') as creationDate, DATE_FORMAT(solutionDate,'%d-%m-%Y') as solutionDate, userType, userId, name, surname FROM wishesAndComplaints"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
                     error: err
                 });
             }
+            callback({
+                data: {wishes:result}
+            });
         })
-        callback({
-            data: "ok"
-        });
+
     });
 
     socket.on('ADD_DESCRIPTION', (data, callback) => {
