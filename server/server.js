@@ -505,7 +505,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_PATIENT_PRESCRIPTIONS', (data, callback) => {
-        var selectQuery = "SELECT p.id, DATE_FORMAT(p.date,'%d-%m-%Y') as date, p.prescriptionNo, p.patientId, p.doctorId, CONCAT(d.name,' ',d.surname) as doctor FROM prescriptions as p INNER JOIN doctors as d ON d.id = doctorId WHERE p.patientId = '" + data.id + "'";
+        var selectQuery = "SELECT p.id, DATE_FORMAT(p.date,'%d-%m-%Y') as date, p.prescriptionNo, p.patientId, p.doctorId, CONCAT(d.name,' ',d.surname) as doctor, p.prescriptionExplanation FROM prescriptions as p INNER JOIN doctors as d ON d.id = doctorId WHERE p.patientId = '" + data.id + "'";
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -765,7 +765,7 @@ io.on('connection', (socket) => {
     });
     
     socket.on('ADD_PRESCRIPTION', (data, callback) => {
-        var insertQuery = "INSERT INTO prescriptions (date, prescriptionNo, patientId, doctorId) VALUES ('"+ data.date +"','"+ data.prescriptionNo +"','"+ data.patientId +"','"+ data.doctorId +"')"
+        var insertQuery = "INSERT INTO prescriptions (date, prescriptionNo, patientId, doctorId, prescriptionExplanation) VALUES ('"+ data.date +"','"+ data.prescriptionNo +"','"+ data.patientId +"','"+ data.doctorId +"','"+ data.prescriptionExplanation +"')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
                 callback({
