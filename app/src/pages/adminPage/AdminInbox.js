@@ -23,12 +23,12 @@ const columns = [
     width: 120,
   },
   {
-    field: 'requestOrComplaint',
+    field: 'subject',
     headerName: 'Talep/Şikayet',
     width: 400,
   },
   {
-    field: 'explanation',
+    field: 'description',
     headerName: 'Açıklama',
     width: 200,
   },
@@ -38,7 +38,7 @@ const columns = [
     width: 200,
   },
   {
-    field: 'resolutionDate',
+    field: 'solutionDate',
     headerName: 'Çözüm Tarihi',
     width: 200,
   },
@@ -57,10 +57,10 @@ const AdminInbox = () => {
 
   const getRequests = () => {
     socket
-      .sendRequest('GET_REQUESTS_OR_COMPLAINTS', {user:"admin"})
+      .sendRequest('GET_WISHES_AND_COMPLAINTS', {})
       .then(async (data) => {
         if (data) {
-          setRequests(data.requests);
+          setRequests(data.wishes);
         }
       })
       .catch((err) => {
@@ -70,12 +70,12 @@ const AdminInbox = () => {
 
   const getRequest = async () => {
     let temp = requests.find(
-      (request) => request.id === setSelectedRequest[0]
+      (request) => request.id === selectedRequest[0]
     );
     setId(temp.id);
     setName(temp.name);
     setSurname(temp.surname);
-    setRequest(temp.request);
+    setRequest(temp.subject);
     setExplanation(temp.explanation);
     setCreationDate(temp.creationDate)
   };
@@ -88,21 +88,25 @@ const AdminInbox = () => {
       let day = date.getDate();
       let month = date.getMonth() + 1;
       let year = date.getFullYear();
+
+      if (day < 10) day = '0' + day;
+      if (month < 10) month = '0' + month;
   
       let formattedToday = `${year}-${month}-${day}`;
       let temp = {
         id: id,
-        resolutionDate: formattedToday,
-        explanation: explanation,
+        solutionDate: formattedToday,
+        description: explanation,
       };
       await socket
-        .sendRequest('UPDATE_EXPLANATION', temp)
+        .sendRequest('ADD_DESCRIPTION', temp)
         .then((data) => {
           if (data) {
             enqueueSnackbar({
               message: 'Açıklama gönderildi.',
               variant: 'success',
             });
+            getRequests()
           }
         })
         .catch((err) => {

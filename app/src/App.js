@@ -64,7 +64,6 @@ const App = () => {
           localStorage.setItem('role', userInfo.role);
           localStorage.setItem('id', userInfo.id);
           setUser({ role: userInfo.role });
-          console.log(userInfo);
         } catch (err) {
           console.error(err);
         }
