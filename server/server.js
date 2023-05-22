@@ -377,7 +377,7 @@ io.on('connection', (socket) => {
     // PATIENT REQUESTS
 
     socket.on('GET_PATIENTS', (callback) => {
-        var selectQuery = "SELECT * FROM patients"
+        var selectQuery = "SELECT id, username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, DATE_FORMAT(p.birthDate,'%d-%m-%Y') as birthDate, phoneNumber, address FROM patients"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -537,7 +537,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_PATIENT_ANALYSIS_RESULTS', (data, callback) => {
-        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, transactionName, result, resultUnit, referenceValue, patientId FROM analysisResults where id=" + data.id + ""
+        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, transactionName, result, resultUnit, referenceValue, patientId FROM analysisResults WHERE id=" + data.patientId + ""
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -836,7 +836,7 @@ io.on('connection', (socket) => {
         })
     });
 
-    socket.on('GET_LABTECHNICIAN_INFO', (data, callback) => {
+    socket.on('GET_LAB_TECHNICIAN_INFO', (data, callback) => {
         var selectQuery = "SELECT * from labtechnicians WHERE id = '" + data.id + "'"
         conn.query(selectQuery, function(err, result) {
             if (err) {
@@ -859,9 +859,91 @@ io.on('connection', (socket) => {
         })
     });
 
-    socket.on('SEND_ANALYSIS_RESULT_WITH_TC', (data, callback) => {
-        insertQuery = "INSERT INTO analysisresults as a (a.date, a.transactionName, a.result, a.resultUnit, a.referenceValue, a.patientId) VALUES ('"+ data.date +"','"+ data.transactionName +"','"+ data.result +"','"+ data.resultUnit +"','"+ referenceValue +"') INNER JOIN patients as p ON p.id = a.patientId WHERE p.tcnumber = '"+ data.tcnumber +"'"
-        conn.query(insertQuery, function(err, result) {
+    socket.on('ADD_ANALYSIS_RESULT', (data, callback) => {
+        for (let index = 0; index < data.diagnoses.length; index++) {
+            insertQuery = "INSERT INTO analysisresults (date, transactionName, result, resultUnit, referenceValue, patientId) VALUES ('"+ data.analysisResults[index].date +"','"+ data.analysisResults[index].transactionName +"','"+ data.analysisResults[index].result +"','"+ data.analysisResults[index].resultUnit +"','"+ data.analysisResults[index].referenceValue +"','"+ data.patientId +"')"
+            conn.query(insertQuery, function(err, result) {
+                if (err) {
+                    callback({
+                        error: err
+                    });
+                }
+            })
+        }
+        callback({
+            data: "ok"
+        });
+    });
+
+    socket.on('LAB_TECHNICIAN_LOGIN', (data, callback) => {
+        var authQuery = "SELECT EXISTS(SELECT 1 FROM labtechnicians WHERE username = '" + data.username + "' AND password = '" + data.password + "') AS present"
+        conn.query(authQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            if (result[0].present == 1) {
+                var idQuery = "SELECT id from labtechnicians WHERE username = '" + data.username + "'"
+                conn.query(idQuery, function(err, result) {
+                    if (err) {
+                        callback({
+                            error: err
+                        });
+                    }
+                    callback({
+                        data: {
+                            userPresent: true,
+                            id: result[0].id
+                        }
+                    });
+                })
+            } else {
+                callback({
+                    data: {
+                        userPresent: false
+                    }
+                });
+            }
+        })
+    });
+
+    socket.on('STAFF_LOGIN', (data, callback) => {
+        var authQuery = "SELECT EXISTS(SELECT 1 FROM staff WHERE username = '" + data.username + "' AND password = '" + data.password + "') AS present"
+        conn.query(authQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            if (result[0].present == 1) {
+                var idQuery = "SELECT id from staff WHERE username = '" + data.username + "'"
+                conn.query(idQuery, function(err, result) {
+                    if (err) {
+                        callback({
+                            error: err
+                        });
+                    }
+                    callback({
+                        data: {
+                            userPresent: true,
+                            id: result[0].id
+                        }
+                    });
+                })
+            } else {
+                callback({
+                    data: {
+                        userPresent: false
+                    }
+                });
+            }
+        })
+    });
+
+    socket.on('GET_INCONCLUSIVE_ANALYSIS_RESULTS', (data, callback) => {
+        var selectQuery = "SELECT a.id, DATE_FORMAT(a.date,'%d-%m-%Y') as date, a.transactionName, a.result, a.resultUnit, a.referenceValue, a.patientId, CONCAT(p.name,' ',p.surname) as patient FROM analysisResults as a INNER JOIN patients as p ON p.id = a.patientId WHERE a.result = ''"
+        conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
                     error: err
@@ -874,18 +956,72 @@ io.on('connection', (socket) => {
             });
         })
     });
+    
+    socket.on('UPDATE_ANALYSIS_RESULT', (data, callback) => {
+        var updateQuery = "UPDATE analysisResults SET result = '"+ data.result +"' WHERE id = '" + data.id + "'"
+        conn.query(updateQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+        })
+        callback({
+            data: "ok"
+        });
+    });
 
-    socket.on('ADD_ANALYSIS_RESULT', (data, callback) => {
-        for (let index = 0; index < data.diagnoses.length; index++) {
-            insertQuery = "INSERT INTO analysisresults (date, transactionName, result, resultUnit, referenceValue, patientId) VALUES ('"+ data.analysisResults[index].date +"','"+ data.analysisResults[index].transactionName +"','"+ data.analysisResults[index].result +"','"+ data.analysisResults[index].resultUnit +"','"+ data.analysisResults[index].referenceValue +"','"+ data.patientId +"')"
-            conn.query(insertQuery, function(err, result) {
-                if (err) {
-                    callback({
-                        error: err
-                    });
-                }
-            })
-        }
+    socket.on('SEND_WISH_AND_COMPLAINT', (data, callback) => {
+        var insertQuery = "INSERT INTO wishesAndComplaints(subject, creationDate, userType, userId, name, surname) VALUES ('"+ data.subject +"','"+ data.creationDate +"','"+ data.userType +"','"+ data.userId +"','"+ data.name +"','"+ data.surname +"')"
+        conn.query(insertQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+        })
+        callback({
+            data: "ok"
+        });
+    });
+
+    socket.on('GET_USER_WISHES_AND_COMPLAINTS', (data, callback) => {
+        var selectQuery = "SELECT id, subject, description, DATE_FORMAT(p.creationDate,'%d-%m-%Y') as creationDate, DATE_FORMAT(p.solutionDate,'%d-%m-%Y') as solutionDate FROM wishesAndComplaints WHERE userId = '"+ data.userId +"' AND userType = '"+ data.userType +"'"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+        })
+        callback({
+            data: "ok"
+        });
+    });
+
+    socket.on('GET_WISHES_AND_COMPLAINTS', (data, callback) => {
+        var selectQuery = "SELECT id, subject, description, DATE_FORMAT(p.creationDate,'%d-%m-%Y') as creationDate, DATE_FORMAT(p.solutionDate,'%d-%m-%Y') as solutionDate, userType, userId, name, surname FROM wishesAndComplaints"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+        })
+        callback({
+            data: "ok"
+        });
+    });
+
+    socket.on('ADD_DESCRIPTION', (data, callback) => {
+        var updateQuery = "UPDATE wishesAndComplaints SET description = '"+ data.description +"', solutionDate = '"+ data.solutionDate +"' WHERE id = '"+ data.id +"'"
+        conn.query(updateQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+        })
         callback({
             data: "ok"
         });
