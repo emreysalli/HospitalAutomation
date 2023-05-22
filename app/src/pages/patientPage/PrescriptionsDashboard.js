@@ -15,77 +15,7 @@ import { socket } from '../../services/socketServices';
 
 const PrescriptionsDashboard = () => {
   const [showDialog, setShowDialog] = React.useState(null);
-  const [prescriptions, setPrescriptions] = React.useState([
-    {
-      id: 1,
-      date: '16.03.2023',
-      prescriptionNo: '1TK2YOS',
-      doctor: 'Emre Yasin Şallı',
-      medicines: [
-        {
-          id: 1,
-          medicineName: 'MAGVİTAL 365 MG',
-          dose: 1,
-          period: '1 GÜN',
-          usage: 'Ağızdan',
-          numberOfUses: 1,
-          totalBox: 1,
-        },
-        {
-          id: 2,
-          medicineName: 'MAGVİTAL 365 MG',
-          dose: 1,
-          period: '1 GÜN',
-          usage: 'Ağızdan',
-          numberOfUses: 1,
-          totalBox: 1,
-        },
-        {
-          id: 3,
-          medicineName: 'MAGVİTAL 365 MG',
-          dose: 1,
-          period: '1 GÜN',
-          usage: 'Ağızdan',
-          numberOfUses: 1,
-          totalBox: 1,
-        },
-      ],
-    },
-    {
-      id: 2,
-      date: '16.03.2023',
-      prescriptionNo: '1TK2YOS',
-      doctor: 'Emre Yasin Şallı',
-      medicines: [
-        {
-          id: 1,
-          medicineName: 'MAGVİTAL 365 MG',
-          dose: 1,
-          period: '1 GÜN',
-          usage: 'Ağızdan',
-          numberOfUses: 1,
-          totalBox: 1,
-        },
-      ],
-    },
-    {
-      id: 1,
-      date: '16.03.2023',
-      prescriptionNo: '1TK2YOS',
-      doctor: 'Emre Yasin Şallı',
-      medicines: [
-        {
-          id: 1,
-          medicineName: 'MAGVİTAL 365 MG',
-          dose: 1,
-          period: '1 GÜN',
-          usage: 'Ağızdan',
-          numberOfUses: 1,
-          totalBox: 1,
-        },
-      ],
-    },
-  ]);
+  const [prescriptions, setPrescriptions] = React.useState([]);
   const getPatientPrescriptions = () => {
     let userId = localStorage.getItem('id');
     socket
@@ -224,14 +154,17 @@ const PrescriptionsDashboard = () => {
         <Typography variant="h6">Reçetelerim</Typography>
         <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
           <Grid container spacing={2} my={1}>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               Tarih
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={1}>
               Reçete No
             </Grid>
-            <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={3}>
+            <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={2}>
               Hekim
+            </Grid>
+            <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={4}>
+              Açıklama
             </Grid>
             <Grid item xs={6} md={3}></Grid>
           </Grid>
@@ -245,14 +178,17 @@ const PrescriptionsDashboard = () => {
             key={index}
           >
             <Grid container spacing={2} my={1}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 {prescription.date}
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={1}>
                 {prescription.prescriptionNo}
               </Grid>
-              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={3}>
+              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={2}>
                 {prescription.doctor}
+              </Grid>
+              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={4}>
+                {prescription.explanation}
               </Grid>
               <Grid item xs={6} md={3}>
                 <Button
