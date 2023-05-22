@@ -13,7 +13,14 @@ const Input = ({
   maxLength
 }) => {
   const handleChange = (event) => {
-    setValue(event.target.value);
+    const regex = /^[0-9\b]+$/;
+    if(event.target.id ==="tcnumber" || event.target.id ==="phoneNumber"){
+      if(regex.test(event.target.value)){
+        setValue(event.target.value);
+      }
+    }else{
+      setValue(event.target.value);
+    }
   };
   return (
     <TextField

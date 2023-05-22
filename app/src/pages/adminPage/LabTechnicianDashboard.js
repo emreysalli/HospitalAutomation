@@ -80,12 +80,14 @@ const LabTechnicianDashboard = () => {
       surname === '' ||
       tcnumber === '' ||
       username === '' ||
-      password === ''
+      password === '' ||
+      tcnumber.length<11
     ) {
       enqueueSnackbar({
         message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
+      return;
     }
     let newLabTechnicianInfo = {
       name: name,
@@ -102,6 +104,11 @@ const LabTechnicianDashboard = () => {
             message: 'Yeni laboratuvar teknisyeni eklendi.',
             variant: 'success',
           });
+          setName('');
+          setSurname('');
+          setTcNumber('');
+          setUsername('');
+          setPassword('');
           getLabTechnicians();
         }
       })
@@ -200,6 +207,7 @@ const LabTechnicianDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Input
               id="username"

@@ -12,6 +12,7 @@ import { socket } from '../../services/socketServices';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import PasswordResetDialog from './../../components/PasswordResetDialog';
 
 const PatientSignIn = () => {
   const { login } = useContext(AuthContext);
@@ -19,6 +20,8 @@ const PatientSignIn = () => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
+  const [openPasswordResetDialog, setOpenPasswordResetDialog] = React.useState(false);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (username === '' || password === '') {
@@ -60,6 +63,7 @@ const PatientSignIn = () => {
         justifyContent: 'center',
       }}
     >
+      <PasswordResetDialog openPasswordResetDialog={openPasswordResetDialog} setOpenPasswordResetDialog={setOpenPasswordResetDialog}/>
       <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
         <LockOutlinedIcon />
       </Avatar>
@@ -91,7 +95,11 @@ const PatientSignIn = () => {
           Giriş Yap
         </Button>
         <Grid container>
-          <Grid item xs></Grid>
+          <Grid item xs>
+            <Button variant="text" onClick={()=>setOpenPasswordResetDialog(true)}>
+              <Link variant="body2">Şifremi Unuttum</Link>
+            </Button>
+          </Grid>
           <Grid item>
             <Link to="../patientsignup" variant="body2">
               Hesabınız yok mu? Üye Ol

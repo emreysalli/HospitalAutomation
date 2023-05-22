@@ -47,6 +47,7 @@ const PolyclinicDashboard = () => {
           message: 'Poliklinik giriniz.',
           variant: 'error',
         });
+        return;
       }
       let polyclinicInfo = {
         polyclinicName: polyclinicName,

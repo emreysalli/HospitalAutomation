@@ -79,12 +79,14 @@ const AdminDashboard = () => {
       surname === '' ||
       tcnumber === '' ||
       username === '' ||
-      password === ''
+      password === '' ||
+      tcnumber.length<11
     ) {
       enqueueSnackbar({
         message: 'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
+      return;
     }
     let newAdminInfo = {
       name: name,
@@ -101,6 +103,11 @@ const AdminDashboard = () => {
             message: 'Yeni yönetici eklendi.',
             variant: 'success',
           });
+          setName('');
+          setSurname('');
+          setTcNumber('');
+          setUsername('');
+          setPassword('');
           getAdmins();
         }
       })
@@ -199,6 +206,7 @@ const AdminDashboard = () => {
               isRequired={true}
               value={tcnumber}
               setValue={setTcNumber}
+              maxLength={11}
             />
             <Input
               id="username"

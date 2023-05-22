@@ -39,6 +39,21 @@ const DoctorAccountInfoDashboard = () => {
   };
 
   const updateDoctor = async () => {
+    if (
+      name === '' ||
+      surname === '' ||
+      tcnumber === '' ||
+      username === '' ||
+      password === '' ||
+      tcnumber.length < 11
+    ) {
+      enqueueSnackbar({
+        message:
+          'Ad, soyad, T.C. kimlik no, kullanıcı adı ve şifre boş bırakılamaz.',
+        variant: 'error',
+      });
+      return;
+    }
     try {
       let userId = localStorage.getItem('id');
       let newDoctorInfo = {

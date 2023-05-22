@@ -18,23 +18,37 @@ import { socket } from '../../services/socketServices';
 import BasicSelect from './../../components/BasicSelect';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
-import { diagnosticStatements, diagnosisTypes, tests, medicines, doses, usagePatterns, periods, usageNumbers, boxQuantities } from './../../data/doctorInspectionData';
-
-
+import { useLocation } from 'react-router-dom';
+import {
+  diagnosticStatements,
+  diagnosisTypes,
+  tests,
+  medicines,
+  doses,
+  usagePatterns,
+  periods,
+  usageNumbers,
+  boxQuantities,
+} from './../../data/doctorInspectionData';
 
 const PatientExaminationDashboard = () => {
+  //prescription
+  const [explanation, setExplanation] = React.useState('');
   const [selectedMedicine, setSelectedMedicine] = React.useState('');
   const [selectedDose, setSelectedDose] = React.useState('');
   const [selectedPeriod, setSelectedPeriod] = React.useState('');
   const [selectedUsage, setSelectedUsage] = React.useState('');
   const [selectedNumberOfUses, setSelectedNumberOfUses] = React.useState('');
   const [selectedTotalBox, setSelectedTotalBox] = React.useState('');
+  const [patientMedicines, setPatientMedicines] = React.useState([]);
+  //diagnoses
   const [selectedExplanation, setSelectedExplanation] = React.useState('');
   const [selectedType, setSelectedType] = React.useState('');
-  const [selectedTest, setSelectedTest] = React.useState('');
-  const [patientMedicines, setPatientMedicines] = React.useState([]);
   const [patientDiagnoses, setPatientDiagnoses] = React.useState([]);
+  //test
+  const [selectedTest, setSelectedTest] = React.useState('');
   const [patientTests, setPatientTests] = React.useState([]);
+  //patient-info
   const [patientTcNumber, setPatientTcNumber] = React.useState('');
   const [patientId, setPatientId] = React.useState('');
   const [name, setName] = React.useState('');
@@ -43,12 +57,19 @@ const PatientExaminationDashboard = () => {
   const [bloodGroup, setBloodGroup] = React.useState('');
   const [birthdate, setBirthdate] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
+  const location = useLocation();
 
   const getPatientInfoWithTC = () => {
+    if (patientTcNumber.length < 11 || patientTcNumber === '') {
+      enqueueSnackbar({
+        message: 'Hasta T.C. Kimlik No hatalı girdiniz.',
+        variant: 'error',
+      });
+      return;
+    }
     socket
       .sendRequest('GET_PATIENT_INFO_WITH_TC', { tcnumber: patientTcNumber })
       .then(async (data) => {
-        console.log(data);
         if (data) {
           setPatientId(data.patientInfo.id);
           setName(data.patientInfo.name);
@@ -90,6 +111,7 @@ const PatientExaminationDashboard = () => {
       prescriptionNo: generateString(5),
       patientId: patientId,
       doctorId: doctorId,
+      explanation:explanation,
     };
     let prescriptionId;
     await socket
@@ -188,13 +210,18 @@ const PatientExaminationDashboard = () => {
 
   const addMedicineToPrescription = () => {
     if (
-      selectedMedicine === '' &&
-      selectedDose === '' &&
-      selectedPeriod === '' &&
-      selectedUsage === '' &&
-      selectedNumberOfUses === '' &&
+      selectedMedicine === '' ||
+      selectedDose === '' ||
+      selectedPeriod === '' ||
+      selectedUsage === '' ||
+      selectedNumberOfUses === '' ||
       selectedTotalBox === ''
     ) {
+      enqueueSnackbar({
+        message:
+          'İlaç, kullanım şekli, doz, periyod, kullanım sayısı ve  kutu adedi seçiniz.',
+        variant: 'error',
+      });
       return;
     }
     let m = {
@@ -220,7 +247,11 @@ const PatientExaminationDashboard = () => {
   };
 
   const addDiagnosis = () => {
-    if (selectedExplanation === '' && selectedType === '') {
+    if (selectedExplanation === '' || selectedType === '') {
+      enqueueSnackbar({
+        message: 'Tanı açıklaması ve türü seçiniz.',
+        variant: 'error',
+      });
       return;
     }
     let d = {
@@ -228,7 +259,6 @@ const PatientExaminationDashboard = () => {
       explanation: selectedExplanation,
       type: selectedType,
     };
-    console.log(d.id);
     setPatientDiagnoses([...patientDiagnoses, d]);
     setSelectedExplanation('');
     setSelectedType('');
@@ -240,6 +270,10 @@ const PatientExaminationDashboard = () => {
 
   const addTest = () => {
     if (selectedTest === '') {
+      enqueueSnackbar({
+        message: 'Test seçiniz.',
+        variant: 'error',
+      });
       return;
     }
     const yyyy = new Date().getFullYear();
@@ -263,17 +297,41 @@ const PatientExaminationDashboard = () => {
   const removeTest = (id) => {
     setPatientTests((prev) => prev.filter((el) => el.id !== id));
   };
+
   const handleChangeTest = (event) => {
     setSelectedTest(event.target.value);
   };
+
+  const getPatientInfo = () => {
+    socket
+      .sendRequest('GET_PATIENT_INFO', { id: location?.state?.patientId })
+      .then(async (data) => {
+        if (data) {
+          setPatientId(data.patientInfo.id);
+          setName(data.patientInfo.name);
+          setSurname(data.patientInfo.surname);
+          setGender(data.patientInfo.gender);
+          setBloodGroup(data.patientInfo.bloodGroup);
+          setBirthdate(data.patientInfo.birthDate);
+          setPatientTcNumber(data.patientInfo.tcnumber);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
   React.useEffect(() => {
-    if (patientId === '') {
+    if (location?.state?.patientId === undefined) {
       enqueueSnackbar({
         message: 'Hasta T.C. Kimlik No giriniz.',
         variant: 'info',
       });
+    } else {
+      getPatientInfo();
     }
   }, [patientId]);
+
   return (
     <Box
       sx={{
@@ -292,7 +350,7 @@ const PatientExaminationDashboard = () => {
           >
             <Typography variant="h6">Hasta Bilgileri</Typography>
             <Input
-              id="patienttcnumber"
+              id="tcnumber"
               label="Hasta T.C. Kimlik No"
               isRequired={true}
               value={patientTcNumber}
@@ -764,6 +822,34 @@ const PatientExaminationDashboard = () => {
                     sx={{ height: '50px', width: '80px' }}
                     onClick={() => {
                       addMedicineToPrescription();
+                    }}
+                    variant="contained"
+                  >
+                    Ekle
+                  </Button>
+                </Stack>
+                <Stack
+                  direction={{ sm: 'column', md: 'row' }}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  mx={2}
+                >
+                  <Input
+                    isDisabled={patientId === '' ? true : false}
+                    id="explanation"
+                    label="Açıklama"
+                    isRequired={true}
+                    value={explanation}
+                    setValue={setExplanation}
+                  />
+                  <Button
+                    disabled={patientId === '' ? true : false}
+                    sx={{ height: '50px', width: '80px',marginLeft:{sm:0,md:6} }}
+                    onClick={() => {
+                      enqueueSnackbar({
+                        message: 'Reçeteye açıklama eklendi.',
+                        variant: 'success',
+                      });
                     }}
                     variant="contained"
                   >
