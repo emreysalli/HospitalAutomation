@@ -13,12 +13,12 @@ import { useSnackbar } from 'notistack';
 const columns = [
   { field: 'id', headerName: 'İletişim Id', width: 90 },
   {
-    field: 'requestOrComplaint',
+    field: 'subject',
     headerName: 'Talep/Şikayet',
     width: 400,
   },
   {
-    field: 'explanation',
+    field: 'description',
     headerName: 'Açıklama',
     width: 200,
   },
@@ -28,7 +28,7 @@ const columns = [
     width: 200,
   },
   {
-    field: 'resolutionDate',
+    field: 'solutionDate',
     headerName: 'Çözüm Tarihi',
     width: 200,
   },
@@ -38,18 +38,35 @@ const DoctorInbox = () => {
   const [requests, setRequests] = React.useState([]);
   const [selectedRequest, setSelectedRequest] = React.useState([]);
   const [request, setRequest] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
+
+  const getPatientInfo = () => {
+    let userId = localStorage.getItem('id');
+    socket
+      .sendRequest('GET_DOCTOR_INFO', { id: parseInt(userId) })
+      .then(async (data) => {
+        if (data) {
+          setName(data.doctorInfo.name);
+          setSurname(data.doctorInfo.surname);
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
 
   const getRequests = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_REQUESTS_OR_COMPLAINTS', {
-        id: parseInt(userId),
-        user: 'doctor',
+      .sendRequest('GET_USER_WISHES_AND_COMPLAINTS', {
+        userId: parseInt(userId),
+        userType: 'doctor',
       })
       .then(async (data) => {
         if (data) {
-          setRequests(data.requests);
+          setRequests(data.wishes);
         }
       })
       .catch((err) => {
@@ -69,11 +86,13 @@ const DoctorInbox = () => {
 
     let formattedToday = yyyy + '-' + mm + '-' + dd;
     socket
-      .sendRequest('SEND_REQUESTS_OR_COMPLAINTS', {
-        id: parseInt(userId),
-        user: 'doctor',
+      .sendRequest('SEND_WISH_AND_COMPLAINT', {
+        userId: parseInt(userId),
+        userType: 'doctor',
         creationDate: formattedToday,
-        request: request,
+        subject: request,
+        name:name,
+        surname:surname,
       })
       .then(async (data) => {
         if (data) {
@@ -81,7 +100,8 @@ const DoctorInbox = () => {
             message: 'Talep/Şikayetiniz gönderildi.',
             variant: 'success',
           });
-          setRequests(data.requests);
+          setRequest("");
+          getRequests();
         }
       })
       .catch((err) => {
@@ -99,6 +119,7 @@ const DoctorInbox = () => {
 
   React.useEffect(() => {
     getRequests();
+    getPatientInfo();
   }, []);
 
   return (
