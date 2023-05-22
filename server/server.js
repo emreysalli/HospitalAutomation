@@ -505,7 +505,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_PATIENT_PRESCRIPTIONS', (data, callback) => {
-        var selectQuery = "SELECT p.id, DATE_FORMAT(p.date,'%d-%m-%Y') as date, p.prescriptionNo, p.patientId, p.doctorId, CONCAT(d.name,' ',d.surname) as doctor, p.prescriptionExplanation FROM prescriptions as p INNER JOIN doctors as d ON d.id = doctorId WHERE p.patientId = '" + data.id + "'";
+        var selectQuery = "SELECT p.id, DATE_FORMAT(p.date,'%d-%m-%Y') as date, p.prescriptionNo, p.patientId, p.doctorId, CONCAT(d.name,' ',d.surname) as doctor, p.explanation FROM prescriptions as p INNER JOIN doctors as d ON d.id = doctorId WHERE p.patientId = '" + data.id + "'";
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -765,7 +765,7 @@ io.on('connection', (socket) => {
     });
     
     socket.on('ADD_PRESCRIPTION', (data, callback) => {
-        var insertQuery = "INSERT INTO prescriptions (date, prescriptionNo, patientId, doctorId, prescriptionExplanation) VALUES ('"+ data.date +"','"+ data.prescriptionNo +"','"+ data.patientId +"','"+ data.doctorId +"','"+ data.prescriptionExplanation +"')"
+        var insertQuery = "INSERT INTO prescriptions (date, prescriptionNo, patientId, doctorId, explanation) VALUES ('"+ data.date +"','"+ data.prescriptionNo +"','"+ data.patientId +"','"+ data.doctorId +"','"+ data.explanation +"')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
                 callback({
@@ -860,7 +860,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_ANALYSIS_RESULT', (data, callback) => {
-        for (let index = 0; index < data.diagnoses.length; index++) {
+        console.log(data);
+        for (let index = 0; index < data.analysisResults.length; index++) {
             insertQuery = "INSERT INTO analysisresults (date, transactionName, result, resultUnit, referenceValue, patientId) VALUES ('"+ data.analysisResults[index].date +"','"+ data.analysisResults[index].transactionName +"','"+ data.analysisResults[index].result +"','"+ data.analysisResults[index].resultUnit +"','"+ data.analysisResults[index].referenceValue +"','"+ data.patientId +"')"
             conn.query(insertQuery, function(err, result) {
                 if (err) {
