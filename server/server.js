@@ -537,7 +537,23 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_PATIENT_ANALYSIS_RESULTS', (data, callback) => {
-        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, transactionName, result, resultUnit, referenceValue, patientId FROM analysisResults WHERE id=" + data.patientId + ""
+        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, patientId FROM analysisResults WHERE patientId = " + data.patientId + " AND GROUP BY date"
+        conn.query(selectQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            callback({
+                data: {
+                    analysisResults: result
+                }
+            });
+        })
+    });
+
+    socket.on('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', (data, callback) => {
+        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, transactionName, result, resultUnit, referenceValue, patientId FROM analysisResults WHERE patientId = '"+ data.patientId +"' AND date = '"+ data.date +"'"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -1056,7 +1072,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('CHANGE_PATIENT_PASSWORD', (data, callback) => {
-        var updateQuery = "UPDATE patients SET password = '"+ data.password +"' WHERE email = '"+ data.email +"'"
+        var updateQuery = "UPDATE patients SET password = '"+ data.newPassword +"' WHERE email = '"+ data.email +"'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
