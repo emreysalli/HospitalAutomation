@@ -19,8 +19,18 @@ const AnalysisResultsDashboard = () => {
 
   const getPatientAnalysisResultsByDate = (date) => {
     let userId = localStorage.getItem('id');
+    let dat = new Date(date);
+      const yyyy = dat.getFullYear();
+      let mm = dat.getMonth() + 1; 
+      let dd = dat.getDate();
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+
+      const formattedDate =yyyy+ '-' + mm + '-' + dd;
+      console.log(formattedDate)
     socket
-      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', { patientId: userId, date:date })
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', { patientId: userId, date:formattedDate })
       .then(async (data) => {
         if (data) {
           setShowDialog(data.analysisResults);
@@ -36,7 +46,6 @@ const AnalysisResultsDashboard = () => {
     socket
       .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { patientId: userId})
       .then(async (data) => {
-        console.log(data)
         if (data) {
           setAnalysisResults(data.analysisResults);
         }
