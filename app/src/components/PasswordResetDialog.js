@@ -203,7 +203,7 @@ const PasswordResetDialog = ({
                   
                   
                   <b>${randomCode}</b></p></div></div>`,
-          }).then((message) => alert(message));
+          }).then((message) => console.log(message));
           handleNext();
         } else {
           handleClose();
