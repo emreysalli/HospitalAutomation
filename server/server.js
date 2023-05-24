@@ -657,7 +657,6 @@ io.on('connection', (socket) => {
         })
     });
 
-    ////
     socket.on('DOCTOR_LOGIN', (data, callback) => {
         var authQuery = "SELECT EXISTS(SELECT 1 FROM doctors WHERE username = '" + data.username + "' AND password = '" + data.password + "') AS present"
         conn.query(authQuery, function(err, result) {
@@ -1020,6 +1019,44 @@ io.on('connection', (socket) => {
 
     socket.on('ADD_DESCRIPTION', (data, callback) => {
         var updateQuery = "UPDATE wishesAndComplaints SET description = '"+ data.description +"', solutionDate = '"+ data.solutionDate +"' WHERE id = '"+ data.id +"'"
+        conn.query(updateQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+        })
+        callback({
+            data: "ok"
+        });
+    });
+
+    socket.on('VERIFY_EMAIL', (data, callback) => {
+        var authQuery = "SELECT EXISTS(SELECT 1 FROM patients WHERE email = '"+ data.email +"') AS present"
+        conn.query(authQuery, function(err, result) {
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            if (result[0].present == 1) {
+                callback({
+                    data: {
+                        present: true
+                    }
+                });
+            } else {
+                callback({
+                    data: {
+                        present: false
+                    }
+                });
+            }
+        })
+    });
+
+    socket.on('CHANGE_PATIENT_PASSWORD', (data, callback) => {
+        var updateQuery = "UPDATE patients SET email = '"+ data.email +"' WHERE email = '"+ data.email +"'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
