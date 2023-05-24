@@ -18,6 +18,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { socket } from '../services/SocketService';
 import themeStyle from '../constants/theme.style';
 import styles from '../constants/styles';
+import PasswordResetDialog from '../components/PasswordResetDialog';
 
 const LoginScreen = ({ navigation }) => {
   const toast = useToast();
@@ -25,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
   const [show, setShow] = useState(false);
   const [userData, setUserData] = useState({});
   const [errors, setErrors] = React.useState({});
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   const usernameValidator = (enteredUsername = userData.username) => {
     if (enteredUsername === undefined || enteredUsername === '') {
@@ -92,10 +94,19 @@ const LoginScreen = ({ navigation }) => {
   return (
     <>
       <Center style={styles.container}>
+        <PasswordResetDialog
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
         <Image
           source={require('../assets/logos/login.png')}
           alt="login-icon"
-          style={{ width: '65%', height: '25%', marginTop: '-20%', marginBottom:"8%" }}
+          style={{
+            width: '65%',
+            height: '25%',
+            marginTop: '-20%',
+            marginBottom: '8%',
+          }}
         />
         <Stack
           space={themeStyle.SPACE_BETWEEN_EACH_STACK_ITEM}
@@ -160,9 +171,16 @@ const LoginScreen = ({ navigation }) => {
               </FormControl.ErrorMessage>
             ) : null}
           </FormControl>
-
           <Button
-            style={styles.loginButton}
+            size="sm"
+            variant="link"
+            style={{ color: '#0891B3', alignSelf: 'flex-end' }}
+            onPress={() => setModalVisible(true)}
+          >
+            Şifremi Unuttum
+          </Button>
+          <Button
+            style={{...styles.loginButton, marginTop: 10 }}
             size={themeStyle.STANDART_BUTTON_SIZE}
             onPress={() => loginUser()}
           >
