@@ -36,7 +36,6 @@ const PrescriptionsDashboard = () => {
       .sendRequest('GET_PATIENT_MEDICINES', { id: userId, prescriptionId: prescriptionId})
       .then(async (data) => {
         if (data) {
-          console.log(data.prescriptions);
           setShowDialog(data.prescriptions);
         }
       })

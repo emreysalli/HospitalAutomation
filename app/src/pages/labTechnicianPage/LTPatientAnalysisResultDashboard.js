@@ -62,7 +62,6 @@ const LTPatientAnalysisResultDashboard = () => {
     socket
       .sendRequest('GET_INCONCLUSIVE_ANALYSIS_RESULTS', {})
       .then(async (data) => {
-        console.log(data);
         if (data) {
           setAnalysisResults(data.analysisResults);
         }

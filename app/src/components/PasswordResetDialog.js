@@ -88,8 +88,8 @@ const PasswordResetDialog = ({
           <Box m={6}>
             <DialogContentText>
               Gerçekten siz olduğunuzdan emin olmak istiyoruz. Kimliğinizi
-              doğrulamak için {email} adresine gönderilen 5 haneli
-              doğrulama kodunu girin.
+              doğrulamak için {email} adresine gönderilen 5 haneli doğrulama
+              kodunu girin.
             </DialogContentText>
             <TextField
               autoFocus
@@ -203,8 +203,14 @@ const PasswordResetDialog = ({
                   
                   
                   <b>${randomCode}</b></p></div></div>`,
-          }).then((message) => console.log(message));
-          handleNext();
+          })
+            .then((message) => handleNext())
+            .catch((err) => {
+              enqueueSnackbar({
+                message: 'Mail gönderilemedi.',
+                variant: 'error',
+              });
+            });
         } else {
           handleClose();
           enqueueSnackbar({
@@ -260,7 +266,7 @@ const PasswordResetDialog = ({
           });
           console.error(err.message);
         });
-        handleClose();
+      handleClose();
     } else {
       enqueueSnackbar({
         message: 'Yeni şifreniz tekrar şifresiyle aynı değil.',

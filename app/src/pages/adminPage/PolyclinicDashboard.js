@@ -80,7 +80,6 @@ const PolyclinicDashboard = () => {
       await socket
         .sendRequest('REMOVE_POLYCLINIC', selectionModel)
         .then((data) => {
-          console.log(data);
           if (data) {
             enqueueSnackbar({
               message: 'Seçili poliklinikler silindi.',

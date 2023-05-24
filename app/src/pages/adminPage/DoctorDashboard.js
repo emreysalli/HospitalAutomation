@@ -177,7 +177,6 @@ const DoctorDashboard = () => {
       await socket
         .sendRequest('REMOVE_DOCTOR', selectionModel)
         .then((data) => {
-          console.log(data);
           if (data) {
             enqueueSnackbar({
               message: 'Seçili doktorlar silindi.',
