@@ -19,7 +19,7 @@ const PatientAnalysisResultDashboard = () => {
 
   const getPatientAnalysisResults = () => {
     socket
-      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', {id:location?.state?.patientId })
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', {patientId:location?.state?.patientId })
       .then(async (data) => {
         if (data) {
           setAnalysisResults(data.analysisResults);

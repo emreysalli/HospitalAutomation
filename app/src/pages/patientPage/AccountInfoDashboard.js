@@ -47,7 +47,7 @@ const AccountInfoDashboard = () => {
           setBirthdate(data.patientInfo.birthDate);
           setPhoneNumber(data.patientInfo.phoneNumber);
           setAddress(data.patientInfo.address);
-          // setEmail(data.patientInfo?.email);
+          setEmail(data.patientInfo?.email);
           setUsername(data.patientInfo.username);
           setPassword(data.patientInfo.password);
         }
@@ -215,7 +215,7 @@ const AccountInfoDashboard = () => {
             />
             <Input
               id="email"
-              label="E-mail"
+              label="E-Posta Adresi"
               isRequired={true}
               value={email}
               setValue={setEmail}

@@ -77,6 +77,12 @@ const columns = [
     editable: true,
   },
   {
+    field: 'email',
+    headerName: 'E-Posta Adresi',
+    width: 200,
+    editable: true,
+  },
+  {
     field: 'username',
     headerName: 'Kullanıcı Adı',
     width: 180,
@@ -105,6 +111,7 @@ const PatientDashboard = () => {
   const [birthdate, setBirthdate] = React.useState('');
   const [phoneNumber, setPhoneNumber] = React.useState('');
   const [address, setAddress] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [rows, setRows] = React.useState([]);
@@ -139,13 +146,14 @@ const PatientDashboard = () => {
       birthdate === '' ||
       phoneNumber === '' ||
       address === '' ||
+      email === '' ||
       username === '' ||
       password === '' ||
       tcnumber.length < 11
     ) {
       enqueueSnackbar({
         message:
-          'Ad, soyad, T.C. kimlik no, cinsiyet, kan grubu, doğum yeri, doğum tarihi, telefon numarası, adres, kullanıcı adı ve şifre giriniz.',
+          'Ad, soyad, T.C. kimlik no, cinsiyet, kan grubu, doğum yeri, doğum tarihi, telefon numarası, adres, email, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
       return;
@@ -170,6 +178,7 @@ const PatientDashboard = () => {
         birthDate: formattedBirthDate,
         phoneNumber: phoneNumber,
         address: address,
+        email: email,
         username: username,
         password: password,
       };
@@ -190,6 +199,7 @@ const PatientDashboard = () => {
             setBirthdate('');
             setPhoneNumber('');
             setAddress('');
+            setEmail('');
             setUsername('');
             setPassword('');
             getPatients();
@@ -347,6 +357,13 @@ const PatientDashboard = () => {
               isRequired={true}
               value={address}
               setValue={setAddress}
+            />
+            <Input
+              id="email"
+              label="E-Posta Adresi"
+              isRequired={true}
+              value={email}
+              setValue={setEmail}
             />
             <Input
               id="username"

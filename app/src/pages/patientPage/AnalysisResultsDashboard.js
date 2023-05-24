@@ -20,7 +20,7 @@ const AnalysisResultsDashboard = () => {
   const getPatientAnalysisResults = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { id: userId })
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { patientId: userId })
       .then(async (data) => {
         if (data) {
           setAnalysisResults(data.analysisResults);

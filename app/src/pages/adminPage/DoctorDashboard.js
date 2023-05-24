@@ -78,8 +78,8 @@ const DoctorDashboard = () => {
         .then((data) => {
           if (data) {
             setPolyclinics(data.polyclinics);
-            for (let i = 0; i < polyclinics.length; i++) {
-              temp.push(polyclinics[i].polyclinicName);
+            for (let i = 0; i < data.polyclinics.length; i++) {
+              temp.push(data.polyclinics[i].polyclinicName);
             }
             setPolyclinicNames(temp);
           }
