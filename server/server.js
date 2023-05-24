@@ -553,7 +553,7 @@ io.on('connection', (socket) => {
             });
         })
     });
-
+//
     socket.on('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', (data, callback) => {
         console.log(data)
         var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, transactionName, result, resultUnit, referenceValue, patientId FROM analysisResults WHERE patientId = '"+ data.patientId +"' AND date = '"+ data.date +"'"
