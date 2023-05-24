@@ -1056,7 +1056,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('CHANGE_PATIENT_PASSWORD', (data, callback) => {
-        var updateQuery = "UPDATE patients SET email = '"+ data.email +"' WHERE email = '"+ data.email +"'"
+        var updateQuery = "UPDATE patients SET password = '"+ data.password +"' WHERE email = '"+ data.email +"'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
