@@ -377,7 +377,7 @@ io.on('connection', (socket) => {
     // PATIENT REQUESTS
 
     socket.on('GET_PATIENTS', (callback) => {
-        var selectQuery = "SELECT id, username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, DATE_FORMAT(p.birthDate,'%d-%m-%Y') as birthDate, phoneNumber, address FROM patients"
+        var selectQuery = "SELECT id, username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, DATE_FORMAT(p.birthDate,'%d-%m-%Y') as birthDate, phoneNumber, address, email FROM patients"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -393,7 +393,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ADD_PATIENT', (data, callback) => {
-        var insertQuery = "INSERT INTO patients (username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, birthDate, phoneNumber, address) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "','" + data.surname + "','" + data.tcnumber + "','" + data.gender + "','" + data.bloodGroup + "','" + data.birthPlace + "','" + data.birthDate + "','" + data.phoneNumber + "','" + data.address + "')"
+        var insertQuery = "INSERT INTO patients (username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, birthDate, phoneNumber, address, email) VALUES ('" + data.username + "', '" + data.password + "','" + data.name + "','" + data.surname + "','" + data.tcnumber + "','" + data.gender + "','" + data.bloodGroup + "','" + data.birthPlace + "','" + data.birthDate + "','" + data.phoneNumber + "','" + data.address + "', '"+ data.email +"')"
         conn.query(insertQuery, function(err, result) {
             if (err) {
                 callback({
@@ -425,7 +425,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('UPDATE_PATIENT', (data, callback) => {
-        var updateQuery = "UPDATE patients SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "',gender = '" + data.gender + "',bloodGroup = '" + data.bloodGroup + "',birthPlace = '" + data.birthPlace + "',birthDate = '" + data.birthDate + "',phoneNumber = '" + data.phoneNumber + "',address = '" + data.address + "' WHERE id = '" + data.id + "'"
+        var updateQuery = "UPDATE patients SET username = '" + data.username + "', password = '" + data.password + "',name = '" + data.name + "',surname = '" + data.surname + "',tcnumber = '" + data.tcnumber + "',gender = '" + data.gender + "',bloodGroup = '" + data.bloodGroup + "',birthPlace = '" + data.birthPlace + "',birthDate = '" + data.birthDate + "',phoneNumber = '" + data.phoneNumber + "',address = '" + data.address + "',email = '"+ data.email +"' WHERE id = '" + data.id + "'"
         conn.query(updateQuery, function(err, result) {
             if (err) {
                 callback({
