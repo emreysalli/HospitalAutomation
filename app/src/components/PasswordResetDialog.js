@@ -236,7 +236,7 @@ const PasswordResetDialog = ({
   const verifyNewPasswords = () => {
     if (newPassword === newRepassword) {
       socket
-        .sendRequest('CHANGE_PASSWORD_PATIENT', {
+        .sendRequest('CHANGE_PATIENT_PASSWORD', {
           email: email,
           newPassword: newPassword,
         })
