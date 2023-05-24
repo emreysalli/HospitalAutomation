@@ -141,6 +141,8 @@ const AnalysisResultsDashboard = () => {
     );
   };
 
+
+
   return (
     <Container
       sx={{
@@ -157,7 +159,7 @@ const AnalysisResultsDashboard = () => {
         }}
       >
         <Typography variant="h6">Tahlillerim</Typography>
-        <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
+        {analysisResults.length !== 0 ?  <><Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
           <Grid container spacing={2} my={1} wrap="nowrap" sx={{ overflow: "auto",marginLeft:{xs:0,md:10} }}>
             <Grid item xs={6}>
               Tarih
@@ -192,7 +194,7 @@ const AnalysisResultsDashboard = () => {
             </Grid>
             <Divider />
           </Box>
-        ))}
+        ))}</> : <><Typography sx={{"textAlign": "center"}}>Kayıtlı bilginiz bulunmamaktadır.</Typography></>}
       </Paper>
     </Container>
   );

@@ -152,7 +152,7 @@ const PrescriptionsDashboard = () => {
         }}
       >
         <Typography variant="h6">Reçetelerim</Typography>
-        <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
+        {prescriptions.length !== 0 ?  <><Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
           <Grid container spacing={2} my={1}>
             <Grid item xs={2}>
               Tarih
@@ -205,7 +205,7 @@ const PrescriptionsDashboard = () => {
             </Grid>
             <Divider />
           </Box>
-        ))}
+        ))}</>: <><Typography sx={{"textAlign": "center"}}>Kayıtlı bilginiz bulunmamaktadır.</Typography></>}
       </Paper>
     </Container>
   );
