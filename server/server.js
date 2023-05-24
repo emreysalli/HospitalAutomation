@@ -537,8 +537,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_PATIENT_ANALYSIS_RESULTS', (data, callback) => {
-        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, patientId FROM analysisResults WHERE patientId = " + data.patientId + " AND GROUP BY date"
+        console.log(data);
+        var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, patientId FROM analysisResults WHERE patientId = '" + data.patientId + "' GROUP BY date"
         conn.query(selectQuery, function(err, result) {
+            console.log(err,result);
             if (err) {
                 callback({
                     error: err
@@ -553,6 +555,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', (data, callback) => {
+        console.log(data)
         var selectQuery = "SELECT id, DATE_FORMAT(date,'%d-%m-%Y') as date, transactionName, result, resultUnit, referenceValue, patientId FROM analysisResults WHERE patientId = '"+ data.patientId +"' AND date = '"+ data.date +"'"
         conn.query(selectQuery, function(err, result) {
             if (err) {
