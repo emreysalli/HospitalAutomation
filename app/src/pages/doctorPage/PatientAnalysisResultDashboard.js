@@ -192,7 +192,7 @@ const PatientAnalysisResultDashboard = () => {
             }}
           >
             <Typography variant="h6">Hasta Tahlil Sonuçları</Typography>
-            <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
+            {analysisResults.length !== 0 ?  <><Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
               <Grid container spacing={2} my={1} wrap="nowrap" sx={{ overflow: "auto",marginLeft:{xs:0,md:10} }}>
                 <Grid item xs={6}>
                   Tarih
@@ -230,7 +230,7 @@ const PatientAnalysisResultDashboard = () => {
                 </Grid>
                 <Divider />
               </Box>
-            ))}
+            ))}</> : <><Typography sx={{"textAlign": "center"}}>Hasta tahlil sonucu bulunmamaktadır.</Typography></>}
           </Paper>
         </Grid>
         <Grid item xs={12} md={2} lg={3}>
