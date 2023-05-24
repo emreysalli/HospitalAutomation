@@ -35,6 +35,9 @@ function computeMutation(newRow, oldRow) {
   if (newRow.tcnumber !== oldRow.tcnumber) {
     return `'${oldRow.tcnumber}' olan T.C. Kimlik No '${newRow.tcnumber}' olarak değiştirilecektir.`;
   }
+  if (newRow.email !== oldRow.email) {
+    return `'${oldRow.email}' olan E-posta adresi '${newRow.email}' olarak değiştirilecektir.`;
+  }
   if (newRow.username !== oldRow.username) {
     return `'${oldRow.username}' olan Kullanıcı Adı '${newRow.username}' olarak değiştirilecektir.`;
   }

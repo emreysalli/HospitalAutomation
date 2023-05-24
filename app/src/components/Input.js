@@ -15,7 +15,7 @@ const Input = ({
   const handleChange = (event) => {
     const regex = /^[0-9\b]+$/;
     if(event.target.id ==="tcnumber" || event.target.id ==="phoneNumber"){
-      if(regex.test(event.target.value)){
+      if(regex.test(event.target.value) || event.target.value===""){
         setValue(event.target.value);
       }
     }else{

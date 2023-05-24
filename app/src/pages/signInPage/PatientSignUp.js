@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -7,7 +7,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 import { socket } from '../../services/socketServices';
-import { AuthContext } from '../../contexts/AuthContext';
 import { Stack } from '@mui/material';
 import Input from '../../components/Input';
 import PasswordInput from '../../components/PasswordInput';
@@ -19,7 +18,6 @@ import { useSnackbar } from 'notistack';
 import BasicSelect from './../../components/BasicSelect';
 
 const PatientSignUp = () => {
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [name, setName] = React.useState('');
   const [surname, setSurname] = React.useState('');
@@ -54,7 +52,7 @@ const PatientSignUp = () => {
     ) {
       enqueueSnackbar({
         message:
-          'Ad, soyad, T.C. kimlik no, doğum yeri, doğum tarihi, telefon numarası, e-mail, kullanıcı adı ve şifre giriniz.',
+          'Ad, soyad, T.C. kimlik no, doğum yeri, doğum tarihi, telefon numarası, e-posta adresi, kullanıcı adı ve şifre giriniz.',
         variant: 'error',
       });
       return;
@@ -85,6 +83,7 @@ const PatientSignUp = () => {
         gender: gender,
         bloodGroup: bloodGroup,
         phoneNumber: phoneNumber,
+        email: email,
         username: username,
         password: password,
       };
@@ -151,7 +150,7 @@ const PatientSignUp = () => {
         />
         <Input
           id="email"
-          label="E-mail"
+          label="E-Posta Adresi"
           isRequired={true}
           value={email}
           setValue={setEmail}
