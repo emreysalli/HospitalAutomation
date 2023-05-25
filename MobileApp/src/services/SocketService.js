@@ -6,6 +6,7 @@ function SocketService() {
   this.connectSocket = () => {
     try {
       this.socket = io(SOCKET_URL_PORT);
+      console.log(SOCKET_URL_PORT)
       this.socket.on('connect', (data) => {
         console.log('socket connected');
         

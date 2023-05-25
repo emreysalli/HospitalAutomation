@@ -11,6 +11,7 @@ import AnalysisResultScreen from './../screens/AnalysisResultScreen';
 import PrescriptionsScreen from './../screens/PrescriptionsScreen';
 import AccountInfoScreen from './../screens/AccountInfoScreen';
 import MedicinesScreen from './../screens/MedicinesScreen';
+import AnalysisResultScreenByDate from './../screens/AnalysisResultScreenByDate';
 
 const Tab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
@@ -38,7 +39,7 @@ const TabScreens = () => {
               iconName = focused
                 ? require('../assets/icons/person.png')
                 : require('../assets/icons/person-outline.png');
-            } else if (route.name === 'AnalysisResultScreen') {
+            } else if (route.name === 'AnalysisResultInfoScreen') {
                 iconName = focused
                   ? require('../assets/icons/vials.png')
                   : require('../assets/icons/vials-outline.png');
@@ -94,13 +95,27 @@ const TabScreens = () => {
           )}
         </Tab.Screen>
         <Tab.Screen
-          name="AnalysisResultScreen"
-          component={AnalysisResultScreen}
+          name="AnalysisResultInfoScreen"
           options={{
-            tabBarLabel: 'Tahlil Sonuçları',
+            tabBarLabel: 'Tahlillerim',
             headerShown: false,
           }}
-        />
+        >
+          {() => (
+            <Stack.Navigator>
+              <Stack.Screen
+                name="AnalysisResultScreen"
+                component={AnalysisResultScreen}
+                options={{ tabBarLabel: 'Tahlillerim',headerTitle: 'Tahlillerim'}}
+              />
+              <Stack.Screen
+                name="AnalysisResultScreenByDate"
+                component={AnalysisResultScreenByDate}
+                options={{ tabBarLabel: 'Tahlil Detayı',headerTitle: 'Tahlil Detayı' }}
+              />
+            </Stack.Navigator>
+          )}
+        </Tab.Screen>
         <Tab.Screen
           name="PrescriptionInfoScreen"
           options={{
