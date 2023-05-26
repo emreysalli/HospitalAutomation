@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Center, ScrollView, VStack, Text } from 'native-base';
+import { Center, ScrollView, VStack, Text, View, Skeleton } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 import PrescriptionCard from './../components/PrescriptionCard';
 import styles from '../constants/styles';
@@ -8,6 +8,7 @@ import { socket } from '../services/SocketService';
 
 const PrescriptionsScreen = () => {
   const [prescriptions, setPrescriptions] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const getPatientPrescriptions = async () => {
     try {
@@ -21,9 +22,11 @@ const PrescriptionsScreen = () => {
               if (data) {
                 setPrescriptions(data.prescriptions);
               }
+              await setIsLoaded(true);
             })
-            .catch((err) => {
+            .catch(async(err) => {
               console.error(err.message);
+              await setIsLoaded(true);
             });
       }
     } catch (err) {
@@ -34,6 +37,23 @@ const PrescriptionsScreen = () => {
   useEffect(() => {
     getPatientPrescriptions();
   }, []);
+
+  if (!isLoaded) {
+    return (
+      <View style={styles.container}>
+      <Center>
+        <VStack
+          space={themeStyle.SPACE_BETWEEN_EACH_STACK_ITEM}
+          style={styles.stackInContainer}
+        >
+          <Skeleton h="150" mt="5" rounded="lg" />
+          <Skeleton h="150" mt="2" rounded="lg" />
+          <Skeleton h="150" mt="2" rounded="lg" />
+        </VStack>
+      </Center>
+    </View>
+    );
+  }
 
   if (prescriptions.length === 0) {
     return (
