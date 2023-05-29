@@ -12,7 +12,7 @@ const columns = [
   {
     field: 'polyclinicName',
     headerName: 'Poliklinik Adı',
-    width: 150,
+    width: 250,
     editable: true,
   },
 ];

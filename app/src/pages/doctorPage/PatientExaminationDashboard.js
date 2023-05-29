@@ -190,7 +190,7 @@ const PatientExaminationDashboard = () => {
   };
 
   const sendPatientTests = () => {
-    if(patientDiagnoses.length === 0){
+    if(patientTests.length === 0){
       enqueueSnackbar({
         message: 'Test ekleyiniz.',
         variant: 'error',

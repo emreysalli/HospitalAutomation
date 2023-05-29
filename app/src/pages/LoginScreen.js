@@ -4,10 +4,11 @@ import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import adminImage from '../assets/images/admin.png';
-import patientImage from '../assets/images/patient.jpg';
+import patientImage from '../assets/images/patient.png';
 import staffImage from '../assets/images/staff.jpg';
-import labtechnicianImage from '../assets/images/labtechnician.jpg';
+import labtechnicianImage from '../assets/images/labtechnician.png';
 import doctorImage from '../assets/images/doctor.jpg';
+
 import { Link } from 'react-router-dom';
 const images = [
   {
