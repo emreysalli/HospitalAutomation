@@ -1,16 +1,113 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
 import Input from '../../components/Input';
 import MakeAppointmentBox from './MakeAppointmentBox';
 import PatientInfoBox from './PatientInfoBox';
+import { socket } from '../../services/socketServices';
+import { useSnackbar } from 'notistack';
 
 const PatientAdmissionPage = () => {
+  const [emergencyDoctors, setEmergencyDoctors] = React.useState([]);
+  const [emergencyId, setEmergencyId] = React.useState('');
+  const [selectedUrgentDoctor, setSelectedUrgentDoctor] = React.useState('');
   //patient
   const [patientId, setPatientId] = React.useState('');
+  const [illness, setIllness] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
+
+  const getEmergencyId = async () => {
+    await socket
+      .sendRequestWithoutArgs('GET_POLYCLINICS')
+      .then(async (data) => {
+        if (await data) {
+          for (let i = 0; i < data.polyclinics.length; i++) {
+            if ((await data.polyclinics[i].polyclinicName) === 'Acil') {
+              await setEmergencyId(data.polyclinics[i].id);
+              return data.polyclinics[i].id;
+            }
+          }
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+
+  const handleChangeDoctor = (event) => {
+    setSelectedUrgentDoctor(event.target.value);
+  };
+
+  useEffect(() => {
+    getEmergencyId();
+  }, []);
+
+  useEffect(() => {
+    const getEmergencyDoctors = async () => {
+      await socket
+        .sendRequest('GET_DOCTORS_OF_POLYCLINIC', {
+          polyclinicId: emergencyId,
+        })
+        .then(async (data) => {
+          if (data) {
+            setEmergencyDoctors(data.doctors);
+          }
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
+    };
+    getEmergencyDoctors();
+  }, [emergencyId]);
+
+  const addPatientToEmergency =()=>{
+      let dat = new Date();
+      const yyyy = dat.getFullYear();
+      let mm = dat.getMonth() + 1; 
+      let dd = dat.getDate();
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+
+      let formattedToday = yyyy+ '-' + mm + '-' + dd;
+      socket
+        .sendRequest('ADD_PATIENT_TO_EMERGENCY', {
+          doctorId:selectedUrgentDoctor.id,
+          patientId: patientId,
+          illness:illness,
+          date:formattedToday
+        })
+        .then(async (data) => {
+          if (data.isRecorded) {
+            enqueueSnackbar({
+              message: 'Kayıt başarılı.',
+              variant: 'success',
+            });
+          }else{
+            if(data.doctorsAvailable){
+              enqueueSnackbar({
+                message: 'Lütfen başka bir acil doktoru seçiniz.',
+                variant: 'error',
+              });
+            }else{
+              enqueueSnackbar({
+                message: 'Tüm acil doktorları dolu lütfen muayeneye yönlendiriniz.',
+                variant: 'error',
+              });
+            }
+          }
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
+  }
 
   return (
     <Box
@@ -56,33 +153,37 @@ const PatientAdmissionPage = () => {
                   >
                     Acil
                   </Typography>
-                  {/* <BasicSelect
-                    label="Durum Seçiniz"
-                    value={selectedPolyclinic}
-                    setValue={setSelectedPolyclinic}
-                    items={polyclinics}
-                  />
-                  <BasicSelect
-                    label="Acil Klinik Seçiniz"
-                    value={selectedPolyclinic}
-                    setValue={setSelectedPolyclinic}
-                    items={polyclinics}
-                  />
-                  <BasicSelect
-                    label="Doktor Seçiniz"
-                    value={selectedDoctor}
-                    setValue={setSelectedDoctor}
-                    items={doctors}
-                    isDisabled={doctorsSelectIsDisabled}
-                  /> */}
+                  <Box sx={{ minWidth: 120, width: '100%' }}>
+                    <FormControl fullWidth margin="normal">
+                      <InputLabel id="demo-simple-select-label">
+                        Acil Doktoru Seçiniz
+                      </InputLabel>
+                      <Select
+                        defaultValue=""
+                        value={selectedUrgentDoctor}
+                        label="Acil Doktoru Seçiniz"
+                        onChange={handleChangeDoctor}
+                      >
+                        {emergencyDoctors.map((name, index) => {
+                          return (
+                            <MenuItem value={name} key={index}>
+                              {name.doctor}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Box>
                   <Input
                     id="complaint"
                     label="Şikayet"
                     isMultiline={true}
                     isRequired={true}
+                    value={illness}
+                    setValue={setIllness}
                   />
                   <Button
-                    onClick={() => {}}
+                    onClick={() => {addPatientToEmergency()}}
                     fullWidth
                     variant="contained"
                     sx={{

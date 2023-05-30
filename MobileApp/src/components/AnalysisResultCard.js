@@ -34,7 +34,7 @@ const AnalysisResultCard = ({ analysisResult }) => {
                 {analysisResult.referenceValue}
               </Text>
               <Text pt={0.5} pl="2" color="black" fontSize="md">
-              {analysisResult.resul}{" "}{analysisResult.resultUnit}
+              {analysisResult.result}{" "}{analysisResult.resultUnit}
               </Text>
             </HStack>
           </Stack>

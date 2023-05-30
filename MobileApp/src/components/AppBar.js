@@ -27,7 +27,7 @@ const AppBar = () => {
           alt="saglik-bakanligi-logo"
         />
         <Text color="white" fontSize="25" fontWeight="bold">
-          Hastane Otomasyonu
+          HBYS
         </Text>
 
         <Image
