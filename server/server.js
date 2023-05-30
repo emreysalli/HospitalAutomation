@@ -377,7 +377,7 @@ io.on('connection', (socket) => {
     // PATIENT REQUESTS
 
     socket.on('GET_PATIENTS', (callback) => {
-        var selectQuery = "SELECT id, username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, DATE_FORMAT(p.birthDate,'%d-%m-%Y') as birthDate, phoneNumber, address, email FROM patients"
+        var selectQuery = "SELECT id, username, password, name, surname, tcnumber, gender, bloodGroup, birthPlace, DATE_FORMAT(birthDate,'%d-%m-%Y') as birthDate, phoneNumber, address, email FROM patients"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -751,7 +751,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('DOCTOR_ANALYSIS_RESULTS', (data, callback) => {
-        var selectQuery = "SELECT a.id, DATE_FORMAT(a.date,'%d-%m-%Y') as date, a.transactionName, a.result, a.resultUnit, a.referenceValue, a.patientId FROM analysisResults as a INNER JOIN patients as p on p.tcnumber = '"+ data.tcnumber +"'"
+        var selectQuery = "SELECT a.id, DATE_FORMAT(a.date,'%d-%m-%Y') as date, a.patientId FROM analysisResults as a INNER JOIN patients as p on p.tcnumber = '"+ data.tcnumber +"' GROUP BY date"
         conn.query(selectQuery, function(err, result) {
             if (err) {
                 callback({
@@ -1088,6 +1088,52 @@ io.on('connection', (socket) => {
         });
     });
 
+    socket.on('ADD_PATIENT_TO_EMERGENCY', (data, callback) => {
+        var selectQuery = "SELECT IF(COUNT()>14,'F','T') as doctorsAvailable from emergency WHERE date = '"+ data.date +"'"
+        conn.query(selectQuery, function(err, result){
+            if (err) {
+                callback({
+                    error: err
+                });
+            }
+            if(result[0].doctorsAvailable === "F"){
+                callback({
+                    data: {
+                        isRecorded:false,
+                        doctorsAvailable: false,
+                    }
+                })
+            }
+        })
+        var selectQuery1 = "SELECT IF(COUNT()>4,'F','T') as doctorAvailable from emergency WHERE doctorId = '"+ data.doctorId +"' AND date = '"+ data.date +"'"
+        conn.query(selectQuery1, function(err, result) {
+            if (result[0].doctorAvailable === "F"){
+                callback({
+                    data: {
+                        isRecorded:false,
+                        doctorsAvailable: true,
+                    }
+                })
+            }
+            else{
+                var insertQuery = "INSERT INTO emergency(patientId, doctorId, date, illness) VALUES ('"+ data.patientId +"','"+ data.doctorId +"','"+ data.date +"','"+ data.illness +"')"
+                conn.query(insertQuery, function(err, result) {
+                    if (err) {
+                        callback({
+                            error: err
+                        });
+                    }else{
+                        callback({
+                            data: {
+                                isRecorded:true
+                            }
+                        });
+                    }
+                })
+
+            }
+        })
+    });
 });
 
 server.listen(3001, () => {
