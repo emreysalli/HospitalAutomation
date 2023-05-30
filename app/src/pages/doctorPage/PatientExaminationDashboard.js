@@ -97,6 +97,13 @@ const PatientExaminationDashboard = () => {
   }
 
   const sendPatientPrescriptionToServer = async () => {
+    if(patientMedicines.length === 0){
+      enqueueSnackbar({
+        message: 'İlaç ekleyiniz.',
+        variant: 'error',
+      });
+      return;
+    }
     let doctorId = localStorage.getItem('id');
     const yyyy = new Date().getFullYear();
     let mm = new Date().getMonth() + 1;
@@ -150,6 +157,13 @@ const PatientExaminationDashboard = () => {
   };
 
   const sendPatientDiagnoses = () => {
+    if(patientDiagnoses.length === 0){
+      enqueueSnackbar({
+        message: 'Tanı ekleyiniz.',
+        variant: 'error',
+      });
+      return;
+    }
     let doctorId = localStorage.getItem('id');
     let data = {
       diagnoses: patientDiagnoses,
@@ -176,6 +190,13 @@ const PatientExaminationDashboard = () => {
   };
 
   const sendPatientTests = () => {
+    if(patientTests.length === 0){
+      enqueueSnackbar({
+        message: 'Test ekleyiniz.',
+        variant: 'error',
+      });
+      return;
+    }
     let doctorId = localStorage.getItem('id');
     let data = {
       analysisResults: patientTests,

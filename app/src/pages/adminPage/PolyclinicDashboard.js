@@ -12,7 +12,7 @@ const columns = [
   {
     field: 'polyclinicName',
     headerName: 'Poliklinik Adı',
-    width: 150,
+    width: 250,
     editable: true,
   },
 ];
@@ -80,7 +80,6 @@ const PolyclinicDashboard = () => {
       await socket
         .sendRequest('REMOVE_POLYCLINIC', selectionModel)
         .then((data) => {
-          console.log(data);
           if (data) {
             enqueueSnackbar({
               message: 'Seçili poliklinikler silindi.',

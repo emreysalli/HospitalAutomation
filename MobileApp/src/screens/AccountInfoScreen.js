@@ -14,6 +14,8 @@ import {
   Alert,
   HStack,
   Text,
+  View,
+  Skeleton
 } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 import DatePicker from 'react-native-date-picker';
@@ -31,6 +33,7 @@ const AccountInfoScreen = () => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const nameValidator = (entered = user.name) => {
     if (entered === undefined || entered === '') {
@@ -119,16 +122,18 @@ const AccountInfoScreen = () => {
           .sendRequest('GET_PATIENT_INFO', {
             id: idParsedValue,
           })
-          .then((data) => {
+          .then(async(data) => {
             if (data) {
               var dateTemp = new Date(data.patientInfo.birthDate);
               dateTemp.setDate(dateTemp.getDate() + 1);
               setUser(data.patientInfo);
               setDate(dateTemp);
             }
+            await setIsLoaded(true);
           })
-          .catch((err) => {
+          .catch(async(err) => {
             console.error(err.message);
+            await setIsLoaded(true);
           });
       }
     } catch (err) {
@@ -247,6 +252,29 @@ const AccountInfoScreen = () => {
   useEffect(() => {
     getUserInfoFromServer();
   }, []);
+
+  if (!isLoaded) {
+    return (
+      <View style={styles.container}>
+      <Center>
+        <VStack
+          space={themeStyle.SPACE_BETWEEN_EACH_STACK_ITEM}
+          style={styles.stackInContainer}
+        >
+          <Heading style={styles.heading}>Kullanıcı Bilgileri</Heading>
+          <Skeleton h="70" mt="5" rounded="lg" />
+          <Skeleton h="70" mt="2" rounded="lg" />
+          <Skeleton h="70" mt="2" rounded="lg" />
+          <Skeleton h="70" mt="2" rounded="lg" />
+          <Skeleton h="70" mt="2" rounded="lg" />
+          <Button size="lg" colorScheme="red" onPress={() => logout()}>
+            Çıkış
+          </Button>
+        </VStack>
+      </Center>
+    </View>
+    );
+  }
 
   return (
     <ScrollView>

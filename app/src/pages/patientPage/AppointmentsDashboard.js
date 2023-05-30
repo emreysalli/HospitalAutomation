@@ -70,7 +70,7 @@ const AppointmentsDashboard = () => {
         }}
       >
         <Typography variant="h6">Randevularım</Typography>
-        {userAppointments.map((appointment, index) => (
+        {userAppointments.length !== 0 ?  <>{userAppointments.map((appointment, index) => (
           <div key={index}>
             <Grid container spacing={2} my={1}>
               <Grid
@@ -117,7 +117,7 @@ const AppointmentsDashboard = () => {
             </Grid>
             <Divider />
           </div>
-        ))}
+        ))}</>: <><Typography sx={{"textAlign": "center"}}>Kayıtlı bilginiz bulunmamaktadır.</Typography></>}
       </Paper>
     </Container>
   );

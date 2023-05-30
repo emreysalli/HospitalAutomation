@@ -19,18 +19,15 @@ const AnalysisResultsDashboard = () => {
 
   const getPatientAnalysisResultsByDate = (date) => {
     let userId = localStorage.getItem('id');
-    let dat = new Date(date);
-      const yyyy = dat.getFullYear();
-      let mm = dat.getMonth() + 1; 
-      let dd = dat.getDate();
+    let dateArray = date.split('-');
 
-      if (dd < 10) dd = '0' + dd;
-      if (mm < 10) mm = '0' + mm;
-
-      const formattedDate =yyyy+ '-' + mm + '-' + dd;
-      console.log(formattedDate)
+    const formattedDate =
+      dateArray[2] + '-' + dateArray[1] + '-' + dateArray[0];
     socket
-      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', { patientId: userId, date:formattedDate })
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', {
+        patientId: userId,
+        date: formattedDate,
+      })
       .then(async (data) => {
         if (data) {
           setShowDialog(data.analysisResults);
@@ -44,7 +41,7 @@ const AnalysisResultsDashboard = () => {
   const getPatientAnalysisResults = () => {
     let userId = localStorage.getItem('id');
     socket
-      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { patientId: userId})
+      .sendRequest('GET_PATIENT_ANALYSIS_RESULTS', { patientId: userId })
       .then(async (data) => {
         if (data) {
           setAnalysisResults(data.analysisResults);
@@ -71,9 +68,11 @@ const AnalysisResultsDashboard = () => {
         onClose={() => {
           setShowDialog(null);
         }}
+        maxWidth="xl"
+        fullWidth={true}
       >
         <DialogTitle id="responsive-dialog-title">
-        Tahlillerim
+          Tahlillerim
           <IconButton
             aria-label="close"
             onClick={() => {
@@ -90,57 +89,59 @@ const AnalysisResultsDashboard = () => {
         </DialogTitle>
         <DialogContent dividers>
           <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
-          <Grid container spacing={3} my={1}>
-            <Grid item xs={4} md={2}>
-              Tarih
+            <Grid container spacing={3} my={1}>
+              <Grid item xs={4} md={2}>
+                Tarih
+              </Grid>
+              <Grid item xs={4} md={3}>
+                İşlem Adı
+              </Grid>
+              <Grid item xs={4} md={2}>
+                Sonuç
+              </Grid>
+              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={2}>
+                Sonuç Birimi
+              </Grid>
+              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={3}>
+                Referans Değeri
+              </Grid>
             </Grid>
-            <Grid item xs={4} md={3}>
-              İşlem Adı
-            </Grid>
-            <Grid item xs={4} md={2}>
-              Sonuç
-            </Grid>
-            <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={2}>
-              Sonuç Birimi
-            </Grid>
-            <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={3}>
-              Referans Değeri
-            </Grid>
-          </Grid>
             <Divider />
           </Box>
           {tests.map((test, index) => (
-          <Box
-            sx={{
-              backgroundColor: index % 2 === 0 ? '#F7F7FC' : '#FFFFFF',
-              paddingX: 1,
-            }}
-            key={index}
-          >
-            <Grid container spacing={2} my={1}>
-              <Grid item xs={4} md={2}>
-                {test.date}
+            <Box
+              sx={{
+                backgroundColor: index % 2 === 0 ? '#F7F7FC' : '#FFFFFF',
+                paddingX: 1,
+              }}
+              key={index}
+            >
+              <Grid container spacing={2} my={1}>
+                <Grid item xs={4} md={2}>
+                  {test.date}
+                </Grid>
+                <Grid item xs={4} md={3}>
+                  {test.transactionName}
+                </Grid>
+                <Grid item xs={4} md={2}>
+                  {test.result}
+                </Grid>
+                <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={2}>
+                  {test.resultUnit}
+                </Grid>
+                <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={3}>
+                  {test.referenceValue}
+                </Grid>
               </Grid>
-              <Grid item xs={4} md={3}>
-                {test.transactionName}
-              </Grid>
-              <Grid item xs={4} md={2}>
-                {test.result}
-              </Grid>
-              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={2}>
-                {test.resultUnit}
-              </Grid>
-              <Grid item sx={{ display: { xs: 'none', md: 'block' } }} md={3}>
-                {test.referenceValue}
-              </Grid>
-            </Grid>
-            <Divider />
-          </Box>
-        ))}
+              <Divider />
+            </Box>
+          ))}
         </DialogContent>
       </Dialog>
     );
   };
+
+
 
   return (
     <Container
@@ -158,8 +159,8 @@ const AnalysisResultsDashboard = () => {
         }}
       >
         <Typography variant="h6">Tahlillerim</Typography>
-        <Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
-          <Grid container spacing={2} my={1}>
+        {analysisResults.length !== 0 ?  <><Box sx={{ backgroundColor: '#F5F5F5', paddingX: 1 }}>
+          <Grid container spacing={2} my={1} wrap="nowrap" sx={{ overflow: "auto",marginLeft:{xs:0,md:10} }}>
             <Grid item xs={6}>
               Tarih
             </Grid>
@@ -175,15 +176,14 @@ const AnalysisResultsDashboard = () => {
             }}
             key={index}
           >
-            <Grid container spacing={2} my={1}>
-              <Grid item xs={6} md={2}>
+            <Grid container spacing={2} my={1} wrap="nowrap" sx={{ overflow: "auto",marginLeft:{xs:0,md:10} }}>
+              <Grid item xs={6}>
                 {analysisResult.date}
               </Grid>
-              <Grid item xs={6} md={3}>
+              <Grid item xs={6}>
                 <Button
                   onClick={() => {
                     getPatientAnalysisResultsByDate(analysisResult.date);
-                    
                   }}
                   variant="contained"
                   sx={{ borderRadius: '50px' }}
@@ -194,7 +194,7 @@ const AnalysisResultsDashboard = () => {
             </Grid>
             <Divider />
           </Box>
-        ))}
+        ))}</> : <><Typography sx={{"textAlign": "center"}}>Kayıtlı bilginiz bulunmamaktadır.</Typography></>}
       </Paper>
     </Container>
   );

@@ -200,7 +200,6 @@ const MakeAppointmentDashboard = () => {
     if (!promiseArguments) {
       return null;
     }
-    console.log(promiseArguments.date)
     let dat = new Date(promiseArguments.date);
     const yyyy = dat.getFullYear();
     let mm = dat.getMonth() + 1;

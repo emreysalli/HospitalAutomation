@@ -1,28 +1,36 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Center, ScrollView, VStack, Text, View, Skeleton } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
-import PastAppointmentCard from './../components/PastAppointmentCard';
+import AnalysisResultCard from './../components/AnalysisResultCard';
 import styles from '../constants/styles';
 import themeStyle from '../constants/theme.style';
 import { socket } from '../services/SocketService';
 
-const PastAppointmentsScreen = () => {
-  const [pastAppointments, setPastAppointments] = useState([]);
+const AnalysisResultScreenByDate = ({ navigation, route }) => {
+  const [analysisResults, setAnalysisResults] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { date } = route.params;
 
-  const getPatientPastAppointments = async () => {
+
+  const getPatientAnalysisResultsByDate = async () => {
     try {
       const idValue = await AsyncStorage.getItem('id');
       const idParsedValue = JSON.parse(idValue);
 
       if (idParsedValue !== null) {
+        let dateArray = date.split('-');
+        const formattedDate =
+          dateArray[2] + '-' + dateArray[1] + '-' + dateArray[0];
         socket
-          .sendRequest('GET_PATIENT_PAST_APPOINTMENTS', { patientId: idParsedValue })
+          .sendRequest('GET_PATIENT_ANALYSIS_RESULTS_BY_DATE', {
+            patientId: idParsedValue,
+            date: formattedDate,
+          })
           .then(async (data) => {
             if (data) {
-              setPastAppointments(data.appointments);
+              setAnalysisResults(data.analysisResults);
             }
-            await setIsLoaded(true);
+          await setIsLoaded(true);
           })
           .catch(async(err) => {
             console.error(err.message);
@@ -35,7 +43,7 @@ const PastAppointmentsScreen = () => {
   };
 
   useEffect(() => {
-    getPatientPastAppointments();
+    getPatientAnalysisResultsByDate();
   }, []);
 
   if (!isLoaded) {
@@ -46,20 +54,21 @@ const PastAppointmentsScreen = () => {
           space={themeStyle.SPACE_BETWEEN_EACH_STACK_ITEM}
           style={styles.stackInContainer}
         >
-          <Skeleton h="200" mt="5" rounded="lg" />
-          <Skeleton h="200" mt="2" rounded="lg" />
-          <Skeleton h="200" mt="2" rounded="lg" />
+          <Skeleton h="130" mt="5" rounded="lg" />
+          <Skeleton h="130" mt="2" rounded="lg" />
+          <Skeleton h="130" mt="2" rounded="lg" />
+          <Skeleton h="130" mt="2" rounded="lg" />
         </VStack>
       </Center>
     </View>
     );
   }
 
-  if (pastAppointments.length === 0) {
+  if (analysisResults.length === 0) {
     return (
       <Center style={styles.container} my="3">
         <Text fontSize="xl" flexShrink={1} color="darkText">
-          Geçmiş randevunuz bulunmamaktadır.
+          Tahlil sonucunuz bulunmamaktadır.
         </Text>
       </Center>
     );
@@ -72,8 +81,11 @@ const PastAppointmentsScreen = () => {
           space={themeStyle.SPACE_BETWEEN_EACH_STACK_ITEM}
           style={styles.stackInContainer}
         >
-          {pastAppointments.map((pastAppointment) => (
-            <PastAppointmentCard pastAppointment={pastAppointment} key={pastAppointment.id}/>
+          {analysisResults.map((analysisResult) => (
+            <AnalysisResultCard
+              analysisResult={analysisResult}
+              key={analysisResult.id}
+            />
           ))}
         </VStack>
       </Center>
@@ -81,4 +93,4 @@ const PastAppointmentsScreen = () => {
   );
 };
 
-export default PastAppointmentsScreen;
+export default AnalysisResultScreenByDate;
